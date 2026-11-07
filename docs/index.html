@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Inkdelta: redlines for Word documents</title>
-<meta name="description" content="Inkdelta shows exactly what changed between versions of a Word document, lets you edit in place, tracks reviewer comments, and brings a Git client, an AI helper and a terminal into one desktop app.">
+<meta name="description" content="Inkdelta shows exactly what changed between versions of a Word document. Edit in place, track reviewer comments, ask an AI, and use Git and a terminal in one desktop app.">
 <meta name="theme-color" content="#f1f2f8">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Inkdelta: see exactly what changed in your Word document">
-<meta property="og:description" content="Word-level redlines from Git history, in-place editing, reviewer comments, an AI helper and a terminal. A desktop app for people who write in Word.">
+<meta property="og:description" content="Word-level redlines from Git history, in-place editing, reviewer comments, an AI helper and a terminal.">
 <meta property="og:image" content="https://mahir-hs.github.io/inkdelta/assets/og.png">
 <meta property="og:url" content="https://mahir-hs.github.io/inkdelta/">
 <meta name="twitter:card" content="summary_large_image">
@@ -20,7 +20,6 @@
 <body>
 <a class="skip" href="#main">Skip to content</a>
 
-<!-- icon sprite for the app windows -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z M14 3v5h5 M9 13h6 M9 17h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-git" viewBox="0 0 24 24"><path d="M6 3v12 M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M18 9a9 9 0 0 1-9 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
@@ -34,173 +33,135 @@
 <header class="top" id="top">
   <div class="top-in">
     <a class="brand" href="#main" aria-label="Inkdelta, back to the top"><svg aria-hidden="true"><use href="#i-logo"/></svg>Inkdelta</a>
-    <nav aria-label="Sections">
-      <a href="#redline">Redline</a>
-      <a href="#edit">Edit</a>
-      <a href="#ask">AI</a>
-      <a href="#git">Git</a>
-      <a href="#errata">Errata</a>
-      <a href="#start">Get started</a>
-      <a class="gh" href="https://github.com/mahir-hs/inkdelta">GitHub</a>
-    </nav>
+    <nav aria-label="Links"><a class="gh" href="https://github.com/mahir-hs/inkdelta">GitHub</a></nav>
   </div>
 </header>
 
 <main id="main">
 
-<!-- ================= hero ================= -->
-<div class="folio hero">
-  <h1 class="headline wide" id="headline" aria-label="See exactly what changed in your Word document.">
-    <span aria-hidden="true"><span class="rev" id="rev"><span class="old">Find out</span><svg class="caret" viewBox="0 0 10 10"><path d="M5 1 L9 9 H1 Z" fill="currentColor"/></svg><span class="new">See exactly</span></span> what changed in your Word document.</span>
-  </h1>
-  <div class="wide hero-grid">
-    <div>
-      <p class="lede">Inkdelta redlines every version of a Word file from your Git history. Read it, edit it in place, check off reviewer comments, and ask an AI for help, without leaving the window.</p>
-      <div class="cta">
-        <a class="btn primary" href="https://github.com/mahir-hs/inkdelta"><svg aria-hidden="true"><use href="#i-gh"/></svg>View on GitHub</a>
-        <a class="btn" href="#redline">See how it works</a>
-      </div>
-      <p class="fine">A desktop app for people who write in Word. Built and checked on Windows; the errata below say what is not checked yet.</p>
+<!-- ============ hero: the headline, a loupe that shows the redline beneath it, and the real app ============ -->
+<section class="hero wrap">
+  <div class="lens-wrap" id="lens">
+    <h1 class="display" aria-label="See exactly what changed in your Word document."><span aria-hidden="true">See exactly what changed in your Word document.</span></h1>
+    <div class="lens-layer" id="lens-layer" aria-hidden="true">
+      <div class="display"><span class="ins-word"><span class="badge">1</span><span class="gone">Find out</span>See exactly</span> what changed in your <span class="ins-word second"><span class="badge">2</span><span class="gone">paper</span>Word document</span>.</div>
     </div>
-
-    <figure class="sheet" id="sheet" aria-label="A paragraph you can step through four versions of">
-      <div class="sheet-head"><span><b>Coastal flood forecasting</b> (sample manuscript)</span><output id="sheet-label" for="ver">Draft 2 against Baseline</output></div>
-      <p class="sheet-text" id="sheet-text" aria-live="polite">We present a method for forecasting coastal flooding from sparse tide gauges. The model is trained on ten years of hourly data and reduces forecast error at most stations. Results suggest it may generalise to new regions.</p>
-      <div class="sheet-foot">
-        <input class="scrub" id="ver" type="range" min="0" max="3" step="1" value="1" aria-label="Version of the paragraph" aria-valuetext="Draft 2">
-        <div class="ticks" id="ticks" aria-hidden="true"><span data-v="0">Baseline</span><span data-v="1">Draft 2</span><span data-v="2">Revision</span><span data-v="3">Submitted</span></div>
-        <div class="tally" id="tally"></div>
-      </div>
-    </figure>
+    <div class="lens-ring" id="lens-ring" aria-hidden="true"></div>
   </div>
+  <div class="hero-cta">
+    <a class="btn primary" href="https://github.com/mahir-hs/inkdelta"><svg aria-hidden="true"><use href="#i-gh"/></svg>View on GitHub</a>
+  </div>
+  <p class="hero-note">Windows today.</p>
+</section>
+
+<div class="object" id="object">
+  <img src="assets/shots/redline.webp" width="3000" height="1880" decoding="async" alt="Inkdelta showing a word-level redline of a paper, the list of its versions, and a reviewer's comments">
 </div>
 
-<!-- ================= redline ================= -->
-<section id="redline">
-  <div class="folio">
-    <div class="prose">
-      <h2>Every version, word by word.</h2>
-      <p>Pick any two versions from Git history, or a file against its last commit. Inkdelta lines up paragraphs first, then compares words, so a reworded sentence shows what moved instead of a whole struck paragraph.</p>
-      <p>Tables, images and equations are compared too, and a ruler beside the page shows where every change sits in the whole paper.</p>
-    </div>
-    <aside class="margin"><strong>Try it.</strong> Change the two versions in the window below, or switch to changes only. This runs a real word-level comparison on the sample text.</aside>
-    <div class="wide" style="margin-top:2.4rem">
-      <div class="win" id="win-redline">
-        <div class="win-bar"><svg class="logo" aria-hidden="true"><use href="#i-logo"/></svg><b>Inkdelta</b><span>File</span><span>Git</span><span>View</span><span class="crumb">flood-paper · main</span></div>
-        <div class="win-body">
-          <div class="rail" aria-hidden="true"><i class="on"><svg><use href="#i-doc"/></svg></i><i><svg><use href="#i-git"/></svg></i><i><svg><use href="#i-list"/></svg></i><i><svg><use href="#i-bot"/></svg></i></div>
-          <div class="panes"><div class="pane">
-            <div class="rl-tools">
-              <label>From <select class="sel-box" id="rl-from" aria-label="Compare from version"></select></label>
-              <label>To <select class="sel-box" id="rl-to" aria-label="Compare to version"></select></label>
-              <span class="chip" role="group" aria-label="What to show"><button id="rl-all" aria-pressed="true">Whole paper</button><button id="rl-only" aria-pressed="false">Changes only</button></span>
-            </div>
-            <div class="rl-body"><div class="page" id="rl-page"></div><div class="ruler" id="rl-ruler" aria-hidden="true"></div></div>
-            <div class="statusline" id="rl-status"></div>
-          </div></div>
-        </div>
+<!-- ============ compare ============ -->
+<section class="scene" id="redline">
+  <div class="scene-head"><h2>Compare</h2><p class="cap">Any two versions, word by word.</p></div>
+  <div class="stage">
+    <div class="win" id="win-redline">
+      <div class="win-bar"><svg class="logo" aria-hidden="true"><use href="#i-logo"/></svg><b>Inkdelta</b><span>File</span><span>Git</span><span>View</span><span class="crumb">flood-paper · main</span></div>
+      <div class="win-body">
+        <div class="rail" aria-hidden="true"><i class="on"><svg><use href="#i-doc"/></svg></i><i><svg><use href="#i-git"/></svg></i><i><svg><use href="#i-list"/></svg></i><i><svg><use href="#i-bot"/></svg></i></div>
+        <div class="panes"><div class="pane">
+          <div class="rl-tools">
+            <label>From <select class="sel-box" id="rl-from" aria-label="Compare from version"></select></label>
+            <label>To <select class="sel-box" id="rl-to" aria-label="Compare to version"></select></label>
+            <span class="chip" role="group" aria-label="What to show"><button id="rl-all" aria-pressed="true">Whole paper</button><button id="rl-only" aria-pressed="false">Changes only</button></span>
+          </div>
+          <div class="rl-body"><div class="page" id="rl-page"></div><div class="ruler" id="rl-ruler" aria-hidden="true"></div></div>
+          <div class="statusline" id="rl-status"></div>
+        </div></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ================= edit ================= -->
-<section id="edit">
-  <div class="folio">
-    <div class="prose">
-      <h2>Edit where you read.</h2>
-      <p>Open the working copy and click any text. Your changes wait in a bar until you press Save, which writes them into the <code>.docx</code> and leaves styles, images and equations alone. Save &amp; commit does the Git part as well.</p>
-    </div>
-    <aside class="margin"><strong>Limits.</strong> Paragraphs holding equations, tabs, line breaks or pictures are read-only here. Edit those in Word. Saving fails with a clear message if the file is open in Word.</aside>
-    <div class="wide" style="margin-top:2.4rem">
-      <div class="win" id="win-edit" role="img" aria-label="Illustration: a paragraph is edited in place, then saved into the Word file">
-        <button class="replay" type="button" data-replay="edit">Replay</button>
-        <div class="win-bar" aria-hidden="true"><svg class="logo"><use href="#i-logo"/></svg><b>Inkdelta</b><span>File</span><span>Git</span><span>View</span><span class="crumb">flood-paper.docx · Working copy</span></div>
-        <div class="win-body" aria-hidden="true">
-          <div class="rail"><i class="on"><svg><use href="#i-doc"/></svg></i><i><svg><use href="#i-git"/></svg></i><i><svg><use href="#i-list"/></svg></i><i><svg><use href="#i-bot"/></svg></i></div>
-          <div class="panes"><div class="pane" style="min-height:21rem">
-            <div class="pane-tab"><span class="on">Redline</span><span>Diff</span></div>
-            <div class="page">
-              <p class="h">Abstract</p>
-              <p>We present a method for forecasting coastal flooding from sparse tide gauges. The model is trained on ten years of hourly data and reduces forecast error by 18% at 31 of 36 stations.</p>
-              <p id="ed-target">Results suggest it may <span id="ed-span">generalise to new regions</span><span class="caretline" id="ed-caret"></span></p>
-              <p>Gauges report every hour. Gaps shorter than six hours are filled by linear interpolation.</p>
-            </div>
-            <div class="editbar" id="ed-bar"><span id="ed-count">1 change waiting</span><button>Discard</button><button id="ed-save">Save</button><button class="pri">Save &amp; commit…</button></div>
-            <div class="toast" id="ed-toast"><i>✓</i>Saved 1 change to the document</div>
-          </div></div>
-        </div>
+<!-- ============ edit ============ -->
+<section class="scene" id="edit">
+  <div class="scene-head"><h2>Edit</h2><p class="cap">Click, type, save to the .docx.</p></div>
+  <div class="stage">
+    <div class="win" id="win-edit" role="img" aria-label="Illustration: a paragraph is edited in place, then saved into the Word file">
+      <button class="replay" type="button" data-replay="edit">Replay</button>
+      <div class="win-bar" aria-hidden="true"><svg class="logo"><use href="#i-logo"/></svg><b>Inkdelta</b><span>File</span><span>Git</span><span>View</span><span class="crumb">flood-paper.docx · Working copy</span></div>
+      <div class="win-body" aria-hidden="true">
+        <div class="rail"><i class="on"><svg><use href="#i-doc"/></svg></i><i><svg><use href="#i-git"/></svg></i><i><svg><use href="#i-list"/></svg></i><i><svg><use href="#i-bot"/></svg></i></div>
+        <div class="panes"><div class="pane" style="min-height:21rem">
+          <div class="pane-tab"><span class="on">Redline</span><span>Diff</span></div>
+          <div class="page">
+            <p class="h">Abstract</p>
+            <p>We present a method for forecasting coastal flooding from sparse tide gauges. The model is trained on ten years of hourly data and reduces forecast error by 18% at 31 of 36 stations.</p>
+            <p id="ed-target">Results suggest it may <span id="ed-span">generalise to new regions</span><span class="caretline" id="ed-caret"></span></p>
+            <p>Gauges report every hour. Gaps shorter than six hours are filled by linear interpolation.</p>
+          </div>
+          <div class="editbar" id="ed-bar"><span id="ed-count">1 change waiting</span><button>Discard</button><button id="ed-save">Save</button><button class="pri">Save &amp; commit…</button></div>
+          <div class="toast" id="ed-toast"><i>✓</i>Saved 1 change to the document</div>
+        </div></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ================= comments ================= -->
-<section id="comments">
-  <div class="folio">
-    <div class="prose">
-      <h2>Keep the reviewers&rsquo; list honest.</h2>
-      <p>Load the reviewer&rsquo;s file and every comment becomes a checklist item with a status, your notes, and links to the changes that answer it. Open comments stay in view until you are done with them.</p>
-    </div>
-    <aside class="margin"><strong>Saved with the project.</strong> Progress lives in <code>.inkdelta/review.json</code> inside your repository, so it travels with the paper.</aside>
-    <div class="wide" style="margin-top:2.4rem">
-      <div class="win" id="win-comments" role="img" aria-label="Illustration: reviewer comments move from open to in progress to done">
-        <button class="replay" type="button" data-replay="comments">Replay</button>
-        <div class="win-bar" aria-hidden="true"><svg class="logo"><use href="#i-logo"/></svg><b>Inkdelta</b><span>File</span><span>Git</span><span>View</span><span class="crumb">flood-paper · main</span></div>
-        <div class="win-body" aria-hidden="true">
-          <div class="rail"><i><svg><use href="#i-doc"/></svg></i><i><svg><use href="#i-git"/></svg></i><i class="on"><svg><use href="#i-list"/></svg></i><i><svg><use href="#i-bot"/></svg></i></div>
-          <div class="panes"><div class="pane">
-            <div class="pane-tab"><span class="on">Review</span><span>Changes</span><span>Word comments</span></div>
-            <ul class="cm-list" id="cm-list">
-              <li class="cm" data-s="open"><span class="cm-dot">✓</span><span class="cm-t">Please say how many stations the 18% figure covers.<span class="cm-note">Reviewer 2, comment 3</span></span><span class="cm-link">change 1</span></li>
-              <li class="cm" data-s="open"><span class="cm-dot">✓</span><span class="cm-t">The claim about new regions is not supported by the data shown.<span class="cm-note">Reviewer 2, comment 5</span></span><span class="cm-link">change 2</span></li>
-              <li class="cm" data-s="open"><span class="cm-dot">✓</span><span class="cm-t">Explain how missing gauge readings were handled.<span class="cm-note">Reviewer 1, comment 2</span></span><span class="cm-link">change 3</span></li>
-              <li class="cm" data-s="open"><span class="cm-dot">✓</span><span class="cm-t">Add a limitations paragraph.<span class="cm-note">Reviewer 1, comment 4</span></span><span class="cm-link">change 4</span></li>
-            </ul>
-            <div class="meter-row"><span id="cm-count">0 of 4 addressed</span><div class="bar"><div id="cm-bar"></div></div></div>
-          </div></div>
-        </div>
+<!-- ============ review ============ -->
+<section class="scene" id="comments">
+  <div class="scene-head"><h2>Review</h2><p class="cap">Every reviewer comment, checked off.</p></div>
+  <div class="stage">
+    <div class="win" id="win-comments" role="img" aria-label="Illustration: reviewer comments move from open to in progress to done">
+      <button class="replay" type="button" data-replay="comments">Replay</button>
+      <div class="win-bar" aria-hidden="true"><svg class="logo"><use href="#i-logo"/></svg><b>Inkdelta</b><span>File</span><span>Git</span><span>View</span><span class="crumb">flood-paper · main</span></div>
+      <div class="win-body" aria-hidden="true">
+        <div class="rail"><i><svg><use href="#i-doc"/></svg></i><i><svg><use href="#i-git"/></svg></i><i class="on"><svg><use href="#i-list"/></svg></i><i><svg><use href="#i-bot"/></svg></i></div>
+        <div class="panes"><div class="pane">
+          <div class="pane-tab"><span class="on">Review</span><span>Changes</span><span>Word comments</span></div>
+          <ul class="cm-list" id="cm-list">
+            <li class="cm" data-s="open"><span class="cm-dot">✓</span><span class="cm-t">Please say how many stations the 18% figure covers.<span class="cm-note">Reviewer 2, comment 3</span></span><span class="cm-link">change 1</span></li>
+            <li class="cm" data-s="open"><span class="cm-dot">✓</span><span class="cm-t">The claim about new regions is not supported by the data shown.<span class="cm-note">Reviewer 2, comment 5</span></span><span class="cm-link">change 2</span></li>
+            <li class="cm" data-s="open"><span class="cm-dot">✓</span><span class="cm-t">Explain how missing gauge readings were handled.<span class="cm-note">Reviewer 1, comment 2</span></span><span class="cm-link">change 3</span></li>
+            <li class="cm" data-s="open"><span class="cm-dot">✓</span><span class="cm-t">Add a limitations paragraph.<span class="cm-note">Reviewer 1, comment 4</span></span><span class="cm-link">change 4</span></li>
+          </ul>
+          <div class="meter-row"><span id="cm-count">0 of 4 addressed</span><div class="bar"><div id="cm-bar"></div></div></div>
+        </div></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ================= AI and terminal on ink ================= -->
+<!-- ============ the ink drop ============ -->
+<div class="flood" id="flood" aria-hidden="true"><div class="flood-stage"><div class="flood-drop" id="flood-drop"></div></div></div>
+
 <div class="ink">
-<section id="ask">
-  <div class="folio">
-    <div class="prose">
-      <h2>Ask an AI about your paper, on your terms.</h2>
-      <p>You choose what the AI sees: the selected text, a section, the whole document, a reviewer comment, or nothing. You can read the exact message before it goes out. Replies can become reworded paragraphs, new paragraphs or removals; you tick the ones you want, and nothing is saved until you press Save.</p>
-      <p>The extra instructions that let the AI propose edits stay off until you switch them on, and a meter estimates how much of the model&rsquo;s context the next message will use.</p>
-    </div>
-    <aside class="margin"><strong>Your account, your tool.</strong> Works with the command-line tool you already use, such as Claude Code, or with an API key, OpenRouter or Ollama. Inkdelta keeps no chat history.</aside>
-    <div class="wide" style="margin-top:2.4rem">
-      <div class="win" id="win-ask" role="img" aria-label="Illustration: a question is sent about a selected paragraph, and the AI proposes a reworded paragraph and a new one, which are added to the document">
-        <button class="replay" type="button" data-replay="ask">Replay</button>
-        <div class="win-bar" aria-hidden="true"><svg class="logo"><use href="#i-logo"/></svg><b>Inkdelta</b><span>File</span><span>Git</span><span>View</span><span style="color:var(--w-accent)">AI</span><span class="crumb">flood-paper · main</span></div>
-        <div class="win-body" aria-hidden="true">
-          <div class="rail"><i><svg><use href="#i-doc"/></svg></i><i><svg><use href="#i-git"/></svg></i><i><svg><use href="#i-list"/></svg></i><i class="on"><svg><use href="#i-bot"/></svg></i></div>
-          <div class="panes ask-grid">
-            <div class="pane" style="min-height:27rem">
-              <div class="pane-tab"><span class="on">Redline</span></div>
-              <div class="page" id="ai-page">
-                <p class="h">Discussion</p>
-                <p id="ai-p1">Results suggest it may generalise to new regions. We tested the model on the North Sea only.</p>
-                <p id="ai-after">Gauges report every hour.</p>
-              </div>
+
+<!-- ============ ask ============ -->
+<section class="scene" id="ask">
+  <div class="scene-head"><h2>Ask</h2><p class="cap">You choose what the AI sees.</p></div>
+  <div class="stage">
+    <div class="win" id="win-ask" role="img" aria-label="Illustration: a question is sent about a selected paragraph, and the AI proposes a reworded paragraph and a new one, which are added to the document">
+      <button class="replay" type="button" data-replay="ask">Replay</button>
+      <div class="win-bar" aria-hidden="true"><svg class="logo"><use href="#i-logo"/></svg><b>Inkdelta</b><span>File</span><span>Git</span><span>View</span><span style="color:var(--w-accent)">AI</span><span class="crumb">flood-paper · main</span></div>
+      <div class="win-body" aria-hidden="true">
+        <div class="rail"><i><svg><use href="#i-doc"/></svg></i><i><svg><use href="#i-git"/></svg></i><i><svg><use href="#i-list"/></svg></i><i class="on"><svg><use href="#i-bot"/></svg></i></div>
+        <div class="panes ask-grid">
+          <div class="pane" style="min-height:27rem">
+            <div class="pane-tab"><span class="on">Redline</span></div>
+            <div class="page" id="ai-page">
+              <p class="h">Discussion</p>
+              <p id="ai-p1">Results suggest it may generalise to new regions. We tested the model on the North Sea only.</p>
+              <p id="ai-after">Gauges report every hour.</p>
             </div>
-            <div class="pane chat">
-              <div class="chat-head"><svg width="15" height="15" aria-hidden="true"><use href="#i-bot"/></svg><span>Ask AI</span><em style="font-style:normal;color:var(--w-text3)">Claude Code</em></div>
-              <div class="chat-log" id="ai-log"></div>
-              <div class="composer">
-                <div class="row"><span>AI sees</span><span class="sel-box" id="ai-sees">Selected text (1)</span></div>
-                <div class="row"><span>Model</span><span class="sel-box">Sonnet</span><span>Effort</span><span class="sel-box">Low</span></div>
-                <div class="row"><span class="sw" id="ai-sw"><i></i>Let the AI propose document changes</span></div>
-                <div class="mini-meter"><div class="bar"><div></div></div><span id="ai-meter">Context ≈ &lt;1% · ~120 of 200k tokens (estimate)</span></div>
-                <div class="field" id="ai-field"><span class="ph">Ask or instruct… (Ctrl+Enter to send)</span></div>
-                <button class="sendbtn" id="ai-send" tabindex="-1">Send</button>
-              </div>
+          </div>
+          <div class="pane chat">
+            <div class="chat-head"><svg width="15" height="15" aria-hidden="true"><use href="#i-bot"/></svg><span>Ask AI</span><em style="font-style:normal;color:var(--w-text3)">Claude Code</em></div>
+            <div class="chat-log" id="ai-log"></div>
+            <div class="composer">
+              <div class="row"><span>AI sees</span><span class="sel-box" id="ai-sees">Selected text (1)</span></div>
+              <div class="row"><span>Model</span><span class="sel-box">Sonnet</span><span>Effort</span><span class="sel-box">Low</span></div>
+              <div class="row"><span class="sw" id="ai-sw"><i></i>Let the AI propose document changes</span></div>
+              <div class="mini-meter"><div class="bar"><div></div></div><span id="ai-meter">Context ≈ &lt;1% · ~120 of 200k tokens (estimate)</span></div>
+              <div class="field" id="ai-field"><span class="ph">Ask or instruct… (Ctrl+Enter to send)</span></div>
+              <button class="sendbtn" id="ai-send" tabindex="-1">Send</button>
             </div>
           </div>
         </div>
@@ -209,148 +170,106 @@
   </div>
 </section>
 
-<section id="terminal">
-  <div class="folio">
-    <div class="prose">
-      <h2>A real terminal, in the project folder.</h2>
-      <p>Run <code>claude</code> or <code>codex</code> without leaving the window. The shell keeps running when you switch tabs, and Source control updates by itself when a file changes.</p>
-    </div>
-    <aside class="margin"><strong>Shell.</strong> PowerShell on Windows, your own shell elsewhere. The Windows shell is checked; macOS and Linux are not yet.</aside>
-    <div class="wide" style="margin-top:2.4rem">
-      <div class="win" id="win-term" role="img" aria-label="Illustration: a command creates a file in a terminal, and the Source control list shows the new file">
-        <button class="replay" type="button" data-replay="term">Replay</button>
-        <div class="win-bar" aria-hidden="true"><svg class="logo"><use href="#i-logo"/></svg><b>Inkdelta</b><span>File</span><span>Git</span><span>View</span><span class="crumb">flood-paper · main</span></div>
-        <div class="win-body" aria-hidden="true">
-          <div class="rail"><i><svg><use href="#i-doc"/></svg></i><i class="on"><svg><use href="#i-git"/></svg><span class="badge" id="tm-badge" hidden>1</span></i><i><svg><use href="#i-list"/></svg></i><i class="on" style="background:none"><svg><use href="#i-term"/></svg></i></div>
-          <div class="panes split">
-            <div class="pane"><div class="pane-tab"><span class="on">Terminal</span><span>Output</span></div><div class="term" id="tm-term"></div></div>
-            <div class="pane"><div class="pane-tab"><span class="on">Source control</span></div><div class="scm"><h4>Changes <em id="tm-n">0</em></h4><ul id="tm-list"></ul><p class="none" id="tm-none">No changes.</p></div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-</div>
-
-<!-- ================= git ================= -->
-<section id="git">
-  <div class="folio">
-    <div class="prose">
-      <h2>A complete Git client, so the history is yours to use.</h2>
-      <p>Stage, commit and amend. Branches, stash and tags. A coloured history graph. Fetch, pull, push, clone and merge. Pick single lines to stage, resolve conflicts section by section, and expect a question before anything destructive.</p>
-    </div>
-    <aside class="margin"><strong>Two engines.</strong> Local work uses a built-in Git engine, so it runs without Git installed. Pull, push and clone use the Git on your computer and its saved logins.</aside>
-    <div class="wide" style="margin-top:2.4rem">
-      <div class="win" id="win-graph" role="img" aria-label="Illustration: a commit history graph with a branch for reviewer 2 that merges back into main">
-        <button class="replay" type="button" data-replay="graph">Replay</button>
-        <div class="win-bar" aria-hidden="true"><svg class="logo"><use href="#i-logo"/></svg><b>Inkdelta</b><span>File</span><span>Git</span><span>View</span><span class="crumb">flood-paper · main</span></div>
-        <div class="win-body" aria-hidden="true">
-          <div class="rail"><i><svg><use href="#i-doc"/></svg></i><i><svg><use href="#i-git"/></svg></i><i class="on"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8 M3 3v5h5 M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></i></div>
-          <div class="panes"><div class="pane graph-pane">
-            <svg id="graph" viewBox="0 0 760 252" role="presentation">
-              <path class="g-line g-draw" data-i="0" stroke="#8f9bff" d="M40 214 V30"/>
-              <path class="g-line g-draw" data-i="1" stroke="#47d1a6" d="M40 214 C40 190 100 192 100 168 V76 C100 52 40 52 40 30"/>
-              <g class="g-pop" style="--delay:.15s"><circle class="g-dot" cx="40" cy="214" r="8" fill="#8f9bff"/><text class="g-txt" x="150" y="212">Baseline: paper v1 as submitted</text><text class="g-sub" x="150" y="230">3d7e1a9 · 2 days ago</text><rect x="468" y="199" width="104" height="20" rx="10" fill="rgba(232,180,79,.18)"/><text class="g-chip" x="480" y="213" fill="#e8b44f">v1-submitted</text></g>
-              <g class="g-pop" style="--delay:.55s"><circle class="g-dot" cx="100" cy="168" r="8" fill="#47d1a6"/><text class="g-txt" x="150" y="166">Add limitations paragraph</text><text class="g-sub" x="150" y="184">8b3a1d2 · reviewer-2</text></g>
-              <g class="g-pop" style="--delay:.85s"><circle class="g-dot" cx="40" cy="122" r="8" fill="#8f9bff"/><text class="g-txt" x="150" y="120">Fix repeated words in the methods section</text><text class="g-sub" x="150" y="138">f3a9c21 · main</text></g>
-              <g class="g-pop" style="--delay:1.15s"><circle class="g-dot" cx="100" cy="76" r="8" fill="#47d1a6"/><text class="g-txt" x="150" y="74">Answer reviewer 2, comment 3</text><text class="g-sub" x="150" y="92">e2c07aa · reviewer-2</text><rect x="448" y="59" width="104" height="20" rx="10" fill="rgba(71,209,166,.16)"/><text class="g-chip" x="460" y="73" fill="#47d1a6">reviewer-2</text></g>
-              <g class="g-pop" style="--delay:1.6s"><circle class="g-dot" cx="40" cy="30" r="8" fill="#8f9bff"/><text class="g-txt" x="150" y="28">Merge branch reviewer-2 into main</text><text class="g-sub" x="150" y="46">a91c4e0 · just now</text><rect x="438" y="13" width="64" height="20" rx="10" fill="rgba(143,155,255,.18)"/><text class="g-chip" x="450" y="27" fill="#8f9bff">main</text></g>
-            </svg>
-          </div></div>
+<!-- ============ run ============ -->
+<section class="scene" id="terminal">
+  <div class="scene-head"><h2>Run</h2><p class="cap">A real terminal in your project.</p></div>
+  <div class="stage">
+    <div class="win" id="win-term" role="img" aria-label="Illustration: a command creates a file in a terminal, and the Source control list shows the new file">
+      <button class="replay" type="button" data-replay="term">Replay</button>
+      <div class="win-bar" aria-hidden="true"><svg class="logo"><use href="#i-logo"/></svg><b>Inkdelta</b><span>File</span><span>Git</span><span>View</span><span class="crumb">flood-paper · main</span></div>
+      <div class="win-body" aria-hidden="true">
+        <div class="rail"><i><svg><use href="#i-doc"/></svg></i><i class="on"><svg><use href="#i-git"/></svg><span class="badge" id="tm-badge" hidden>1</span></i><i><svg><use href="#i-list"/></svg></i><i class="on" style="background:none"><svg><use href="#i-term"/></svg></i></div>
+        <div class="panes split">
+          <div class="pane"><div class="pane-tab"><span class="on">Terminal</span><span>Output</span></div><div class="term" id="tm-term"></div></div>
+          <div class="pane"><div class="pane-tab"><span class="on">Source control</span></div><div class="scm"><h4>Changes <em id="tm-n">0</em></h4><ul id="tm-list"></ul><p class="none" id="tm-none">No changes.</p></div></div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ================= workspace ================= -->
-<section id="workspace">
-  <div class="folio">
-    <div class="prose">
-      <h2>Yours to arrange.</h2>
-      <p>Drag panels to any edge, split them, or float them. One dialog sends each panel to the left, right or bottom, and the layout is remembered. There are eight themes and six accent colours, a choice of document font and size, and zoom. Press <kbd>Ctrl</kbd>+<kbd>K</kbd> for every command.</p>
-      <div class="themes" id="themes" role="group" aria-label="Theme"></div>
-      <div class="accents" id="accents" role="group" aria-label="Accent colour"><span>Accent</span></div>
-    </div>
-    <aside class="margin"><strong>Live.</strong> These are the app&rsquo;s own eight themes and six accents. Pick one and the window below changes.</aside>
-    <div class="wide" style="margin-top:2.4rem">
-      <div class="win" id="win-themes" role="img" aria-label="The app window, shown in the theme and accent you pick above">
-        <div class="win-bar" aria-hidden="true"><svg class="logo"><use href="#i-logo"/></svg><b>Inkdelta</b><span>File</span><span>Git</span><span>View</span><span class="crumb">flood-paper · main</span></div>
-        <div class="win-body" aria-hidden="true">
-          <div class="rail"><i class="on"><svg><use href="#i-doc"/></svg></i><i><svg><use href="#i-git"/></svg></i><i><svg><use href="#i-list"/></svg></i><i><svg><use href="#i-bot"/></svg></i></div>
-          <div class="panes"><div class="pane" style="min-height:17rem">
-            <div class="pane-tab"><span class="on">Redline</span><span>Diff</span></div>
-            <div class="page"><p class="h">Abstract</p><p>We present a method for forecasting coastal flooding from sparse tide gauges. The model is trained on ten years of hourly data and <del>performs well</del><ins>reduces forecast error by 18%</ins> at most stations. <span class="edited">Results suggest it may generalise to new regions.</span></p></div>
-          </div></div>
-        </div>
+<!-- ============ commit ============ -->
+<section class="scene" id="git">
+  <div class="scene-head"><h2>Commit</h2><p class="cap">A full Git client.</p></div>
+  <div class="stage">
+    <div class="win" id="win-graph" role="img" aria-label="Illustration: a commit history graph with a branch for reviewer 2 that merges back into main">
+      <button class="replay" type="button" data-replay="graph">Replay</button>
+      <div class="win-bar" aria-hidden="true"><svg class="logo"><use href="#i-logo"/></svg><b>Inkdelta</b><span>File</span><span>Git</span><span>View</span><span class="crumb">flood-paper · main</span></div>
+      <div class="win-body" aria-hidden="true">
+        <div class="rail"><i><svg><use href="#i-doc"/></svg></i><i><svg><use href="#i-git"/></svg></i><i class="on"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8 M3 3v5h5 M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></i></div>
+        <div class="panes"><div class="pane graph-pane">
+          <svg id="graph" viewBox="0 0 760 252" role="presentation">
+            <path class="g-line g-draw" data-i="0" stroke="#8f9bff" d="M40 214 V30"/>
+            <path class="g-line g-draw" data-i="1" stroke="#47d1a6" d="M40 214 C40 190 100 192 100 168 V76 C100 52 40 52 40 30"/>
+            <g class="g-pop" style="--delay:.15s"><circle class="g-dot" cx="40" cy="214" r="8" fill="#8f9bff"/><text class="g-txt" x="150" y="212">Baseline: paper v1 as submitted</text><text class="g-sub" x="150" y="230">4f2f9dd · last week</text><rect x="468" y="199" width="104" height="20" rx="10" fill="rgba(232,180,79,.18)"/><text class="g-chip" x="480" y="213" fill="#e8b44f">v1-submitted</text></g>
+            <g class="g-pop" style="--delay:.55s"><circle class="g-dot" cx="100" cy="168" r="8" fill="#47d1a6"/><text class="g-txt" x="150" y="166">Answer reviewer 2, comment 3</text><text class="g-sub" x="150" y="184">465da38 · reviewer-2</text></g>
+            <g class="g-pop" style="--delay:.85s"><circle class="g-dot" cx="40" cy="122" r="8" fill="#8f9bff"/><text class="g-txt" x="150" y="120">Add submission checklist</text><text class="g-sub" x="150" y="138">bf6eed8 · main</text></g>
+            <g class="g-pop" style="--delay:1.15s"><circle class="g-dot" cx="100" cy="76" r="8" fill="#47d1a6"/><text class="g-txt" x="150" y="74">Add limitations paragraph</text><text class="g-sub" x="150" y="92">4763b30 · reviewer-2</text><rect x="448" y="59" width="104" height="20" rx="10" fill="rgba(71,209,166,.16)"/><text class="g-chip" x="460" y="73" fill="#47d1a6">reviewer-2</text></g>
+            <g class="g-pop" style="--delay:1.6s"><circle class="g-dot" cx="40" cy="30" r="8" fill="#8f9bff"/><text class="g-txt" x="150" y="28">Merge branch reviewer-2 into main</text><text class="g-sub" x="150" y="46">8b06364 · main</text><rect x="438" y="13" width="64" height="20" rx="10" fill="rgba(143,155,255,.18)"/><text class="g-chip" x="450" y="27" fill="#8f9bff">main</text></g>
+          </svg>
+        </div></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ================= errata ================= -->
-<section id="errata" class="errata">
-  <div class="folio">
-    <div class="prose">
-      <h2>Errata: what is checked, and what is not.</h2>
-      <p>A product page should correct itself. This is the honest state of Inkdelta today, kept in the project notes and updated as things are tried.</p>
-    </div>
-    <div class="wide errata-grid">
-      <div>
-        <h3>Checked in the real app, with real Git</h3>
-        <ul>
-          <li>Staging, committing, branches, stash and tags</li>
-          <li>Merge-conflict resolution and line-by-line staging</li>
-          <li>Comparing versions from history</li>
-          <li>Editing in place, saved into the <code>.docx</code> and committed</li>
-          <li>Paragraph insert and delete, saved and read back from the file</li>
-          <li>Themes, zoom, docking with a real mouse, layout choices</li>
-          <li>The Ask AI chat and the review flow, with a stand-in command-line tool</li>
-          <li>The terminal: a real shell, <code>claude</code> found on the path, Claude Code&rsquo;s screen drawn correctly, files made by the shell appearing in Source control</li>
-        </ul>
-      </div>
-      <div class="open">
-        <h3>Not checked yet</h3>
-        <ul>
-          <li>The AI with a real provider: Claude Code, Codex, OpenRouter, Ollama or an API key</li>
-          <li>Pull and push against GitHub (only a local server was used)</li>
-          <li>macOS and Linux builds; the workflow exists but has never run</li>
-          <li>Installers. Only the plain Windows program is built so far</li>
-          <li>Native file pickers, HTML export, printing and comparing two loose files</li>
-          <li>Moved paragraphs show as one deletion and one insertion</li>
-        </ul>
+<!-- ============ style ============ -->
+<section class="scene" id="workspace">
+  <div class="scene-head">
+    <h2>Style</h2><p class="cap">Eight themes. Six accents.</p>
+    <div class="themes" id="themes" role="group" aria-label="Theme"></div>
+    <div class="accents" id="accents" role="group" aria-label="Accent colour"><span>Accent</span></div>
+  </div>
+  <div class="stage">
+    <div class="win" id="win-themes" role="img" aria-label="The app window, shown in the theme and accent you pick above">
+      <div class="win-bar" aria-hidden="true"><svg class="logo"><use href="#i-logo"/></svg><b>Inkdelta</b><span>File</span><span>Git</span><span>View</span><span class="crumb">flood-paper · main</span></div>
+      <div class="win-body" aria-hidden="true">
+        <div class="rail"><i class="on"><svg><use href="#i-doc"/></svg></i><i><svg><use href="#i-git"/></svg></i><i><svg><use href="#i-list"/></svg></i><i><svg><use href="#i-bot"/></svg></i></div>
+        <div class="panes"><div class="pane" style="min-height:17rem">
+          <div class="pane-tab"><span class="on">Redline</span><span>Diff</span></div>
+          <div class="page"><p class="h">Abstract</p><p>We present a method for forecasting coastal flooding from sparse tide gauges. The model is trained on ten years of hourly data and <del>performs well</del><ins>reduces forecast error by 18%</ins> at most stations. <span class="edited">Results suggest it may generalise to new regions.</span></p></div>
+        </div></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ================= start ================= -->
-<section id="start">
-  <div class="folio">
-    <div class="prose">
-      <h2>Get started.</h2>
-      <p>Inkdelta is built from source for now. You need Node 22 or newer, pnpm, stable Rust and, on Windows, the Visual Studio C++ build tools. Pull, push and clone also need Git installed.</p>
-      <pre class="code" tabindex="0"><span class="c"># get the code and start the app</span>
+<!-- ============ status ============ -->
+<section class="scene status" id="status">
+  <div class="scene-head">
+    <h2>Status</h2><p class="cap">What is checked, and what is not.</p>
+    <h3>Checked</h3>
+    <ul class="chips">
+      <li>Staging</li><li>Commits</li><li>Branches</li><li>Stash</li><li>Merge conflicts</li><li>Line staging</li><li>Compare versions</li><li>Edit in place</li><li>Add and delete paragraphs</li><li>Themes</li><li>Ask AI, with a stand-in tool</li><li>Terminal</li>
+    </ul>
+    <h3>Not yet</h3>
+    <ul class="chips open">
+      <li>AI with a real provider</li><li>GitHub push and pull</li><li>macOS and Linux</li><li>Installers</li><li>Native file pickers</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ get it ============ -->
+<section class="scene get" id="start">
+  <div class="scene-head">
+    <h2 class="display" style="font-size:clamp(3.4rem,10vw,9rem)">Get Inkdelta.</h2>
+    <div class="hero-cta" style="margin-top:2rem"><a class="btn primary" href="https://github.com/mahir-hs/inkdelta"><svg aria-hidden="true"><use href="#i-gh"/></svg>View on GitHub</a></div>
+    <pre class="code" tabindex="0"><span># Node 22, pnpm and Rust needed</span>
 git clone https://github.com/mahir-hs/inkdelta.git
 cd inkdelta
 pnpm install
-pnpm app
-
-<span class="c"># or build the program itself</span>
-pnpm exec tauri build --no-bundle</pre>
-      <p>Open a project folder that holds your <code>.docx</code> files and uses Git, or start it directly with <code>inkdelta &lt;folder&gt;</code>. The <a href="https://github.com/mahir-hs/inkdelta/blob/main/ARCHITECTURE.md">architecture notes</a> explain where everything lives.</p>
-    </div>
-    <aside class="margin"><strong>Built with</strong> Tauri 2, a Rust backend and a React and TypeScript interface. 48 backend tests run against real Git repositories, a real zip, and a real shell.</aside>
+pnpm app</pre>
   </div>
 </section>
+
+</div>
 
 </main>
 
 <footer>
   <div class="in">
-    <span>Inkdelta, by <a href="https://github.com/mahir-hs">mahir-hs</a>. Set in Newsreader and Geist (SIL Open Font License).</span>
-    <span><a href="https://github.com/mahir-hs/inkdelta">Source on GitHub</a> &nbsp; <a href="https://github.com/mahir-hs/inkdelta/blob/main/ARCHITECTURE.md">Architecture</a></span>
+    <span class="brand" style="color:#e7e8fb"><svg aria-hidden="true" style="width:1.4rem;height:1.4rem"><use href="#i-logo"/></svg>Inkdelta</span>
+    <span>Sample manuscript is invented. Set in Newsreader and Geist (SIL OFL). <a href="https://github.com/mahir-hs/inkdelta">GitHub</a></span>
   </div>
 </footer>
 

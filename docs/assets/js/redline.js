@@ -52,7 +52,7 @@ export function setupRedline() {
         const badge = document.createElement("span");
         badge.className = "badge-n";
         badge.textContent = String(changeNumber);
-        badge.style.marginLeft = "-1.3rem";
+        badge.style.marginLeft = "-2.5rem";
         el.append(badge);
         const t = tally(item.ops);
         words.added += t.added;

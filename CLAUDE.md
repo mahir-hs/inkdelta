@@ -16,13 +16,19 @@ Read `ARCHITECTURE.md` (map, rules, where to change things) and `README.md` befo
   Test against a COPY (`D:\Scratch\inkdelta-test-repo`).
 
 ## The website (docs/)
-Product page published with GitHub Pages: `docs/index.html`, `docs/assets/{css,js,fonts}`. No build step. Design idea: the page is a manuscript
-(pale proof paper, indigo ink, margin notes), the app appears as dark "specimen" windows in its real colours, the hero headline revises itself
-once (strike, insert, tidy) and a real word-level diff (`js/diff.js`) powers the paragraph scrubber and the Redline window. Scenes in
-`js/scenes.js` play when scrolled into view and show their final state under `prefers-reduced-motion`. The "Errata" section lists what is
-verified and NOT verified: keep it honest and in step with the section below. The page uses an INVENTED sample manuscript: never put the owner's
-real paper text, commit hashes or paths on it. Preview: `python -m http.server 8099 --bind 127.0.0.1` in `docs/`; screenshots by driving
-headless Edge over the DevTools protocol (profile on D:). `.github/workflows/pages.yml` deploys it; Pages source must be "GitHub Actions".
+Product page on GitHub Pages: `docs/index.html`, `docs/assets/{css,js,fonts,shots}`. No build step. OWNER'S RULES FOR IT: VISUAL FIRST, VERY FEW WORDS
+(one giant word + one short line per feature), NO architecture / "built with" / test counts / prose paragraphs; README must stay short and visual too.
+Design: pale proof paper, indigo ink; hero = headline with a loupe (`js/lens.js`) that follows the cursor and shows the redline layer
+(touch screens: it patrols on its own; reduced motion: it rests on the changed words), then a REAL screenshot of the app that tilts upright on
+scroll; each feature = giant word (drifts sideways) + dark app window that tilts in (`js/scroll.js`, CSS variables `--e --p --h --f`);
+an ink drop floods the page into the dark half (Ask, Run, Commit, Style, Status, Get). App windows are HTML re-creations in the app's real colours;
+`js/scenes.js` plays them when scrolled into view (final states under `prefers-reduced-motion`); `js/diff.js` is a real word diff used by the Compare
+window. "Status" chips = what is / is not verified: keep honest and in step with the section below.
+Real screenshots (`assets/shots/*.webp`, also used by the README) come from the real app on an INVENTED demo project built by a script
+(`D:\Scratch\demo\build_demo.py`: sample paper as real .docx files, a reviewer file with Word comments, a Git history with a branch and merge) with a
+scripted stand-in AI reply; captured over the DevTools protocol at 2x as WebP. NEVER use the owner's real paper text, hashes or paths on the site/README.
+Preview: `python -m http.server 8099 --bind 127.0.0.1` in `docs/`; check with headless Edge over the DevTools protocol (profile on D:).
+`.github/workflows/pages.yml` deploys on changes to `docs/`; Pages source is "GitHub Actions"; `gh` lives at `D:\DevData\gh\bin\gh.exe` (logged in).
 The repo has NO LICENSE file yet (owner has not chosen one); do not invent one.
 
 ## Build, run, test
