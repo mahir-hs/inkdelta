@@ -15,7 +15,7 @@ jobs:
             args: ""
           - os: macos-latest        # Apple Silicon
             args: "--target aarch64-apple-darwin"
-          - os: macos-13            # Intel
+          - os: macos-15-intel      # Intel (the old macos-13 runner no longer exists)
             args: "--target x86_64-apple-darwin"
           - os: ubuntu-22.04
             args: ""
@@ -28,7 +28,7 @@ jobs:
         with: { node-version: 22, cache: pnpm }
       - uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.os == 'macos-latest' && 'aarch64-apple-darwin' || matrix.os == 'macos-13' && 'x86_64-apple-darwin' || '' }}
+          targets: ${{ matrix.os == 'macos-latest' && 'aarch64-apple-darwin' || matrix.os == 'macos-15-intel' && 'x86_64-apple-darwin' || '' }}
       - uses: swatinem/rust-cache@v2
         with: { workspaces: src-tauri }
       - name: Linux system libraries
