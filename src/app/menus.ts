@@ -23,7 +23,7 @@ function fromCommands(ids: string[]): MenuItem[] {
   return items;
 }
 
-export const fileMenu = () => fromCommands(["open", "clone", "compare", "-", "export", "print"]);
+export const fileMenu = () => fromCommands(["open", "clone", "compare", "-", "export", "print", "-", "check-updates"]);
 
 export const gitMenu = () =>
   fromCommands(["fetch", "pull", "push", "-", "branch", "stash", "tag", "stage-all", "-", "resolve", "abort-merge", "-", "remote", "identity"]);

@@ -1,6 +1,7 @@
 // Appearance: pick a theme, an accent colour, and how the document is set. Everything applies instantly.
 
-import { Check, Monitor } from "lucide-react";
+import { Check, Monitor, RefreshCw } from "lucide-react";
+import { useUpdater } from "../../store/updater";
 import { ACCENTS, THEMES, useUi, type DocFont, type DocSize, type ThemeInfo } from "../../store/ui";
 
 const FONTS: [DocFont, string][] = [["serif", "Serif"], ["sans", "Sans"], ["classic", "Classic"]];
@@ -10,6 +11,7 @@ export function AppearanceDialog() {
   const open = useUi((s) => s.appearanceOpen);
   const appearance = useUi((s) => s.appearance);
   const setAppearance = useUi((s) => s.setAppearance);
+  const version = useUpdater((s) => s.currentVersion);
   const close = () => useUi.getState().setAppearanceOpen(false);
   if (!open) return null;
 
@@ -60,7 +62,12 @@ export function AppearanceDialog() {
             ))}
           </span>
         </div>
-        <p className="doc-sample">Pneumonia remains a significant global health concern, especially for susceptible groups.</p>
+        <p className="doc-sample">Sparse tide gauges are cheap and already deployed, so a method that works with them could reach places that have no warning today.</p>
+
+        <div className="about-row">
+          <span>Inkdelta {version}</span>
+          <button className="quiet" onClick={() => { close(); void useUpdater.getState().checkNow(); }}><RefreshCw size={13} /> Check for updates</button>
+        </div>
 
         <div className="dialog-actions">
           <button className="primary" onClick={close}>Done</button>

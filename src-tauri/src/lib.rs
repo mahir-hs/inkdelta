@@ -32,6 +32,14 @@ pub fn run() {
     tauri::Builder::default()
         .manage(terminal::Terminals::default())
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_process::init()) // restart after an update
+        .setup(|app| {
+            // Checking for and installing updates: see src/store/updater.ts for the user-facing flow.
+            #[cfg(desktop)]
+            app.handle().plugin(tauri_plugin_updater::Builder::new().build())?;
+            let _ = app;
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             commands::startup_path,
             commands::open_repository,

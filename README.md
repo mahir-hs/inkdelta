@@ -6,6 +6,10 @@
 
 <p align="center"><img src="docs/assets/shots/redline.webp" alt="Inkdelta showing a word-level redline of a paper, the list of versions, and the reviewer's comments"></p>
 
+**[Download the latest version](https://github.com/mahir-hs/inkdelta/releases/latest)**: Windows (`.exe` or `.msi`), macOS (`.dmg`) and Linux (`.AppImage`, `.deb`, `.rpm`).
+The installers are not code-signed yet, so Windows may warn: choose *More info*, then *Run anyway*. On macOS, right-click the app and choose Open.
+Windows is the one tested; macOS and Linux have not been tried yet.
+
 Inkdelta is a desktop app for people who write in Word. It redlines every version of a `.docx` from your Git history,
 lets you edit in place, tracks reviewer comments, and has an AI helper and a terminal built in.
 
@@ -47,6 +51,12 @@ lines to stage, and resolve conflicts section by section. Anything destructive a
 
 Also: a reviewer-comment checklist with notes, VS Code-style docking, eight themes and six accents, zoom, HTML export and print.
 Press **Ctrl+K** for every command.
+
+## Updates
+
+Inkdelta checks for a new version in the background and asks before downloading. The download runs in the background with
+percentage and speed, and it asks again before installing. File > Check for updates looks on demand. Every update is
+signature-checked.
 
 ## Run it
 

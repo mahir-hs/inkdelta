@@ -46,10 +46,14 @@ jobs:
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Add signing secrets here before a public release:
-          # APPLE_CERTIFICATE, APPLE_ID, ... (macOS)   TAURI_SIGNING_PRIVATE_KEY (updater)
+          # Signs the update packages, so the app only installs updates that really come from this project.
+          # (The key and its password are repository secrets; the public half is in tauri.conf.json.)
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          # Optional, for a smoother first run on macOS: APPLE_CERTIFICATE, APPLE_ID, ... (needs a paid Apple account)
         with:
           tagName: ${{ github.ref_name }}
           releaseName: "Inkdelta ${{ github.ref_name }}"
           releaseDraft: true
+          includeUpdaterJson: true   # uploads latest.json, the file the app checks for new versions
           args: ${{ matrix.args }}

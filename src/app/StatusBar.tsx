@@ -2,6 +2,7 @@
 
 import { LoaderCircle, Minus, Plus, TriangleAlert } from "lucide-react";
 import { BranchChip } from "../features/sourcecontrol/BranchChip";
+import { UpdateChip } from "../features/updates/UpdateChip";
 import { S } from "../strings";
 import { useGit } from "../store/git";
 import { useWorkspace } from "../store/workspace";
@@ -24,6 +25,7 @@ export function StatusBar() {
         <span className="status-item busy"><LoaderCircle size={13} className="spin" /> {busy}…</span>
       )}
       <span className="spacer" />
+      <UpdateChip />
       {tool && !tool.available && repo && (
         <span className="status-item warn" title="Pull and push need Git installed (git-scm.com)">
           <TriangleAlert size={13} /> Git not installed

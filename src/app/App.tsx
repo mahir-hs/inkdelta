@@ -11,6 +11,8 @@ import { useWorkspace } from "../store/workspace";
 import { useZoom } from "../store/zoom";
 import { LayoutDialog } from "../features/layout/LayoutDialog";
 import { AiDialogs } from "../features/ai/AiDialogs";
+import { UpdateHost } from "../features/updates/UpdateHost";
+import { useUpdater } from "../store/updater";
 import { AppearanceDialog } from "../features/appearance/AppearanceDialog";
 import { ConflictResolver } from "../features/conflicts/ConflictResolver";
 import { DialogHost } from "../ui/DialogHost";
@@ -75,6 +77,9 @@ export default function App() {
     return () => window.removeEventListener("focus", onFocus);
   }, []);
 
+  // ---- look for a new version in the background (it only ever ASKS; see store/updater.ts)
+  useEffect(() => { void useUpdater.getState().init(); }, []);
+
   // ---- keyboard: F3 / Shift+F3 move between changes, Ctrl+K opens the command palette
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -128,6 +133,7 @@ export default function App() {
       <LayoutDialog />
       <AiDialogs />
       <AppearanceDialog />
+      <UpdateHost />
       <ConflictResolver />
       <DialogHost />
       <MenuHost />

@@ -69,6 +69,19 @@ with Node (global `WebSocket`). Take screenshots with `Page.captureScreenshot` a
   After the shell has been quiet for 1.5 s the app refreshes Git status (files changed by a tool show up on their own). App shortcuts
   (Ctrl+K, zoom keys) are ignored inside `.terminal-host`. Windows ConPTY asks the terminal for the cursor position at start (`ESC[6n`);
   xterm.js answers it, a bare test must answer `ESC[1;1R` itself.
+- **Updates**: `tauri-plugin-updater` + `-process`; flow in `store/updater.ts` (phases idle/checking/available/downloading/ready/installing), screens in
+  `features/updates/` (a small card that ASKS, a details dialog, a status-bar chip with % and speed), wrapper `api/updater.ts`. Checks 10 s after start and
+  every 6 h (switch in the dialog, key `inkdelta.autoUpdate`; skipped version `inkdelta.skipUpdate`); File > Check for updates and the palette open the
+  dialog. Download runs in the background; install asks again and warns about unsaved edits. The app reads
+  `https://github.com/mahir-hs/inkdelta/releases/latest/download/latest.json` (made by tauri-action, `includeUpdaterJson`) and verifies every update
+  against the PUBLIC key in `tauri.conf.json`. The PRIVATE key + password are in `D:\DevData\inkdelta-signing\` (BACK THEM UP: if lost, installed apps can
+  never update again) and MUST also be GitHub secrets `TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`, or the release build fails
+  (the auto mode classifier blocks Claude from writing secrets: the owner runs `gh secret set` themselves).
+  Tested locally against a mock server (`D:\Scratch\updater-mock`, throttled, real signature): ask, background download with % and speed, ready prompt.
+  NOT tested: a real update installing, and the restart.
+  RELEASE: bump the version in package.json, tauri.conf.json and Cargo.toml; push a tag `vX.Y.Z`; CI builds a DRAFT with installers for all systems; the
+  owner publishes it (updates and the site's Download button only see PUBLISHED releases). Do not move or delete tags (blocked as destructive; use a new version).
+  The site and README Download buttons point to `releases/latest`.
 - **Ask AI chat** (panel `ask`, left icon bar + AI menu): `features/ai/chat.ts` (context, prompt, reply parsing, no UI), `store/chat.ts`
   (messages are in memory only, never saved), `features/ai/AskPanel.tsx`. The user picks what the AI sees (selected text / a section / whole
   document / a review comment / nothing) and can open "Exactly what will be sent". Each message is one CLI call; earlier turns are repeated

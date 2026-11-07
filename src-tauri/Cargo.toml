@@ -1,6 +1,6 @@
 [package]
 name = "inkdelta"
-version = "0.1.1"
+version = "0.2.0"
 description = "Version-aware redlines for Word documents"
 edition = "2021"
 license = "MIT"
@@ -23,6 +23,8 @@ sha2 = "0.11.1"
 similar = "3.2.1"
 tauri = { version = "2", features = [] }
 tauri-plugin-dialog = "2"
+tauri-plugin-process = "2"
+tauri-plugin-updater = "2"
 ureq = { version = "2", features = ["json"] }
 zip = "9.4.1"
 

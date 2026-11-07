@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Inkdelta",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "identifier": "app.inkdelta.desktop",
   "build": {
     "beforeDevCommand": "pnpm dev",
@@ -24,12 +24,32 @@
         "dragDropEnabled": false
       }
     ],
-    "security": { "csp": "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; connect-src ipc: http://ipc.localhost" }
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; connect-src ipc: http://ipc.localhost"
+    }
   },
   "bundle": {
     "active": true,
     "targets": "all",
     "shortDescription": "Version-aware redlines for Word documents",
-    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"]
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "createUpdaterArtifacts": true
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDA3QkI4OEI3RTA0NTg2MDYKUldRR2hrWGd0NGk3QjdWN0RUUGFWK3h0R1p5SHlGbVR0TFJzTng5WksxUXZyWXgzcm1WYmlCYjEK",
+      "endpoints": [
+        "https://github.com/mahir-hs/inkdelta/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
   }
 }

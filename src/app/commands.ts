@@ -7,6 +7,7 @@ import { useConflicts } from "../store/conflicts";
 import { useAi } from "../store/ai";
 import { useGit } from "../store/git";
 import { THEMES, useUi } from "../store/ui";
+import { useUpdater } from "../store/updater";
 import { useWorkspace } from "../store/workspace";
 import { useZoom } from "../store/zoom";
 import { PANEL_TITLES, resetLayout, showPanel, type PanelId } from "./layout";
@@ -35,6 +36,7 @@ export function getCommands(): Command[] {
     { id: "clone", title: "Clone a repository…", group: "File", run: () => ws.cloneRepository() },
     { id: "export", title: "Export redline as HTML…", group: "File", available: () => hasDiff, run: () => exportRedline(ws.diff!, ws.file) },
     { id: "print", title: "Print or save redline as PDF", group: "File", available: () => hasDiff, run: () => window.print() },
+    { id: "check-updates", title: "Check for updates…", group: "File", run: () => useUpdater.getState().checkNow() },
 
     { id: "next", title: "Next change", group: "Redline", available: () => hasDiff, run: () => stepChange(1) },
     { id: "prev", title: "Previous change", group: "Redline", available: () => hasDiff, run: () => stepChange(-1) },

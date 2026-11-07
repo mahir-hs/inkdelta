@@ -26,6 +26,7 @@
   <symbol id="i-list" viewBox="0 0 24 24"><path d="M10 6h11 M10 12h11 M10 18h11 M3 6l1.5 1.5L7 5 M3 12l1.5 1.5L7 11 M3 18l1.5 1.5L7 17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-bot" viewBox="0 0 24 24"><path d="M12 8V4H8 M4 10h16a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1z M2 15h2 M20 15h2 M9 14v2 M15 14v2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-term" viewBox="0 0 24 24"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z M7 9l3 3-3 3 M13 15h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 3v12 M6 10l6 6 6-6 M5 21h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-gh" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></symbol>
   <symbol id="i-logo" viewBox="0 0 512 512"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5b7cff"/><stop offset="1" stop-color="#2b3fb8"/></linearGradient></defs><rect width="512" height="512" rx="112" fill="url(#lg)"/><path d="M256 92 L420 372 Q430 398 404 408 L108 408 Q82 398 92 372 Z" fill="#fff" opacity="0.96"/><path d="M256 196 C256 196 200 262 200 300 A56 56 0 0 0 312 300 C312 262 256 196 256 196 Z" fill="#2b3fb8"/></symbol>
 </svg>
@@ -33,7 +34,7 @@
 <header class="top" id="top">
   <div class="top-in">
     <a class="brand" href="#main" aria-label="Inkdelta, back to the top"><svg aria-hidden="true"><use href="#i-logo"/></svg>Inkdelta</a>
-    <nav aria-label="Links"><a class="gh" href="https://github.com/mahir-hs/inkdelta">GitHub</a></nav>
+    <nav aria-label="Links"><a href="https://github.com/mahir-hs/inkdelta/releases/latest">Download</a><a class="gh" href="https://github.com/mahir-hs/inkdelta">GitHub</a></nav>
   </div>
 </header>
 
@@ -49,9 +50,10 @@
     <div class="lens-ring" id="lens-ring" aria-hidden="true"></div>
   </div>
   <div class="hero-cta">
-    <a class="btn primary" href="https://github.com/mahir-hs/inkdelta"><svg aria-hidden="true"><use href="#i-gh"/></svg>View on GitHub</a>
+    <a class="btn primary" href="https://github.com/mahir-hs/inkdelta/releases/latest"><svg aria-hidden="true"><use href="#i-down"/></svg>Download</a>
+    <a class="btn" href="https://github.com/mahir-hs/inkdelta"><svg aria-hidden="true"><use href="#i-gh"/></svg>GitHub</a>
   </div>
-  <p class="hero-note">Windows today.</p>
+  <p class="hero-note">Windows, macOS and Linux. Windows is the tested one.</p>
 </section>
 
 <div class="object" id="object">
@@ -240,11 +242,11 @@
     <h2>Status</h2><p class="cap">What is checked, and what is not.</p>
     <h3>Checked</h3>
     <ul class="chips">
-      <li>Staging</li><li>Commits</li><li>Branches</li><li>Stash</li><li>Merge conflicts</li><li>Line staging</li><li>Compare versions</li><li>Edit in place</li><li>Add and delete paragraphs</li><li>Themes</li><li>Ask AI, with a stand-in tool</li><li>Terminal</li>
+      <li>Staging</li><li>Commits</li><li>Branches</li><li>Stash</li><li>Merge conflicts</li><li>Line staging</li><li>Compare versions</li><li>Edit in place</li><li>Add and delete paragraphs</li><li>Themes</li><li>Ask AI, with a stand-in tool</li><li>Terminal</li><li>Update check, with a stand-in server</li>
     </ul>
     <h3>Not yet</h3>
     <ul class="chips open">
-      <li>AI with a real provider</li><li>GitHub push and pull</li><li>macOS and Linux</li><li>Installers</li><li>Native file pickers</li>
+      <li>AI with a real provider</li><li>GitHub push and pull</li><li>macOS and Linux</li><li>Installers, built but not tried</li><li>A real update installing</li><li>Native file pickers</li>
     </ul>
   </div>
 </section>
@@ -253,8 +255,12 @@
 <section class="scene get" id="start">
   <div class="scene-head">
     <h2 class="display" style="font-size:clamp(3.4rem,10vw,9rem)">Get Inkdelta.</h2>
-    <div class="hero-cta" style="margin-top:2rem"><a class="btn primary" href="https://github.com/mahir-hs/inkdelta"><svg aria-hidden="true"><use href="#i-gh"/></svg>View on GitHub</a></div>
-    <pre class="code" tabindex="0"><span># Node 22, pnpm and Rust needed</span>
+    <div class="hero-cta" style="margin-top:2rem">
+      <a class="btn primary" href="https://github.com/mahir-hs/inkdelta/releases/latest"><svg aria-hidden="true"><use href="#i-down"/></svg>Download</a>
+      <a class="btn" href="https://github.com/mahir-hs/inkdelta"><svg aria-hidden="true"><use href="#i-gh"/></svg>GitHub</a>
+    </div>
+    <p class="hero-note get-note">Not code-signed yet. If Windows warns, choose More info, then Run anyway. Inkdelta then updates itself, and asks first.</p>
+    <pre class="code" tabindex="0"><span># or build it yourself: Node 22, pnpm and Rust</span>
 git clone https://github.com/mahir-hs/inkdelta.git
 cd inkdelta
 pnpm install
