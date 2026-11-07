@@ -12,8 +12,13 @@
 //!
 //! Paragraphs holding tabs, line breaks, equations, pictures or fields are refused: their text
 //! does not map cleanly onto text nodes, so they must be edited in Word.
+//!
+//! Whole paragraphs can also be inserted (a copy of a nearby paragraph's look, new text) or deleted.
+//! All positions refer to the file as the user saw it, so several changes can be saved at once.
 
 use crate::error::{AppError, AppResult};
+use crate::model::DocChanges;
+#[cfg(test)]
 use crate::model::ParagraphEdit;
 use quick_xml::events::Event;
 use quick_xml::Reader;
@@ -29,8 +34,14 @@ const COMPLEX: [&str; 10] = [
     "<w:tab/>", "<w:br", "<w:cr/>", "<w:drawing", "<w:pict", "<m:oMath", "<w:fldChar", "<w:fldSimple", "<w:sym", "<w:noBreakHyphen",
 ];
 
+/// Text-only edits (kept for callers and tests that have nothing else to change).
+#[cfg(test)]
 pub fn apply_edits(docx: &[u8], edits: &[ParagraphEdit]) -> AppResult<Vec<u8>> {
-    if edits.is_empty() {
+    apply_changes(docx, &DocChanges { edits: edits.to_vec(), ..Default::default() })
+}
+
+pub fn apply_changes(docx: &[u8], changes: &DocChanges) -> AppResult<Vec<u8>> {
+    if changes.edits.is_empty() && changes.inserts.is_empty() && changes.deletes.is_empty() {
         return Err(AppError::Invalid("there are no edits to save".into()));
     }
     let bad = |m: &str| AppError::Docx(m.to_string());
@@ -38,7 +49,7 @@ pub fn apply_edits(docx: &[u8], edits: &[ParagraphEdit]) -> AppResult<Vec<u8>> {
 
     let mut xml = String::new();
     archive.by_name("word/document.xml").map_err(|_| bad("word/document.xml is missing"))?.read_to_string(&mut xml)?;
-    let patched = patch_document(&xml, edits)?;
+    let patched = patch_document(&xml, changes)?;
 
     let mut writer = zip::ZipWriter::new(Cursor::new(Vec::new()));
     for i in 0..archive.len() {
@@ -55,20 +66,102 @@ pub fn apply_edits(docx: &[u8], edits: &[ParagraphEdit]) -> AppResult<Vec<u8>> {
     Ok(writer.finish().map_err(|e| AppError::Docx(e.to_string()))?.into_inner())
 }
 
-fn patch_document(xml: &str, edits: &[ParagraphEdit]) -> AppResult<String> {
-    let wanted: HashSet<usize> = edits.iter().map(|e| e.position).collect();
+fn patch_document(xml: &str, changes: &DocChanges) -> AppResult<String> {
+    let mut wanted: HashSet<usize> = HashSet::new();
+    wanted.extend(changes.edits.iter().map(|e| e.position));
+    wanted.extend(changes.deletes.iter().map(|d| d.position));
+    for insert in &changes.inserts {
+        wanted.insert(insert.after);
+        wanted.insert(insert.like.unwrap_or(insert.after));
+    }
     let ranges = paragraph_ranges(xml, &wanted)?;
+    let range_of = |position: usize| ranges.get(&position).copied().ok_or_else(|| AppError::Docx(format!("paragraph {position} was not found in the file")));
 
-    let mut result = xml.to_string();
+    // The paragraphs that actually change: edited, deleted, or followed by a new one.
+    let mut touched: HashSet<usize> = changes.edits.iter().map(|e| e.position).collect();
+    touched.extend(changes.deletes.iter().map(|d| d.position));
+    touched.extend(changes.inserts.iter().map(|i| i.after));
+
+    let mut operations: Vec<(usize, usize, String)> = Vec::new(); // (start, end, replacement)
+    for position in touched {
+        let (start, end) = range_of(position)?;
+        let original = &xml[start..end];
+        let edit = changes.edits.iter().find(|e| e.position == position);
+        let delete = changes.deletes.iter().find(|d| d.position == position);
+
+        let mut replacement = match (edit, delete) {
+            (Some(_), Some(_)) => return Err(AppError::Invalid(format!("paragraph {position} is both edited and deleted"))),
+            (Some(e), None) => patch_paragraph(original, &e.old_text, &e.new_text)?,
+            (None, Some(d)) => {
+                check_deletable(xml, start, end, &d.old_text)?;
+                String::new()
+            }
+            (None, None) => original.to_string(),
+        };
+        for insert in changes.inserts.iter().filter(|i| i.after == position) {
+            let (like_start, like_end) = range_of(insert.like.unwrap_or(insert.after))?;
+            replacement.push_str(&new_paragraph(&xml[like_start..like_end], &insert.text)?);
+        }
+        operations.push((start, end, replacement));
+    }
+
     // Patch from the end of the file so earlier offsets stay valid.
-    let mut ordered: Vec<&ParagraphEdit> = edits.iter().collect();
-    ordered.sort_by_key(|e| std::cmp::Reverse(ranges.get(&e.position).map(|r| r.0).unwrap_or(0)));
-    for edit in ordered {
-        let &(start, end) = ranges.get(&edit.position).ok_or_else(|| AppError::Docx(format!("paragraph {} was not found in the file", edit.position)))?;
-        let patched = patch_paragraph(&xml[start..end], &edit.old_text, &edit.new_text)?;
-        result.replace_range(start..end, &patched);
+    operations.sort_by_key(|op| std::cmp::Reverse(op.0));
+    let mut result = xml.to_string();
+    for (start, end, replacement) in operations {
+        result.replace_range(start..end, &replacement);
     }
     Ok(result)
+}
+
+/// A paragraph may be removed only if it is plain text that still matches, and Word would not break.
+fn check_deletable(xml: &str, start: usize, end: usize, old: &str) -> AppResult<()> {
+    let paragraph = &xml[start..end];
+    if paragraph.contains("<w:sectPr") {
+        return Err(AppError::Docx("this paragraph holds a section break and must be removed in Word".into()));
+    }
+    if xml[end..].trim_start().starts_with("</w:tc>") {
+        return Err(AppError::Docx("a table cell must keep at least one paragraph; delete the text instead".into()));
+    }
+    // Empty paragraphs have no text nodes; they only count as stale if the user saw text.
+    let current: String = text_nodes(paragraph).iter().map(|n| n.text.as_str()).collect();
+    if current != old {
+        return Err(AppError::Docx("This paragraph changed since you opened it. Reload the document and try again.".into()));
+    }
+    if let Some(markup) = COMPLEX.iter().find(|m| paragraph.contains(**m)) {
+        return Err(AppError::Docx(format!("this paragraph contains {} and must be removed in Word", markup.trim_start_matches('<').trim_end_matches("/>"))));
+    }
+    Ok(())
+}
+
+/// A new paragraph that looks like `like` (same style, numbering and first-run font) but holds `text`.
+fn new_paragraph(like: &str, text: &str) -> AppResult<String> {
+    let text = text.replace(['\r', '\n'], " ");
+    if text.trim().is_empty() {
+        return Err(AppError::Invalid("a new paragraph needs some text".into()));
+    }
+    let mut properties = like
+        .find("<w:pPr>")
+        .and_then(|from| like[from..].find("</w:pPr>").map(|to| like[from..from + to + 8].to_string()))
+        .unwrap_or_default();
+    // A copied section break would split the document; paragraph-mark formatting is also left behind.
+    for (open, close) in [("<w:sectPr", "</w:sectPr>"), ("<w:rPr>", "</w:rPr>")] {
+        if let (Some(a), Some(b)) = (properties.find(open), properties.find(close)) {
+            if b > a {
+                properties.replace_range(a..b + close.len(), "");
+            }
+        }
+    }
+    let run_properties = like
+        .find("<w:r>")
+        .or_else(|| like.find("<w:r "))
+        .and_then(|run| {
+            let after_tag = run + like[run..].find('>')? + 1;
+            let rest = &like[after_tag..];
+            rest.starts_with("<w:rPr>").then(|| rest[..rest.find("</w:rPr>").map(|i| i + 8).unwrap_or(0)].to_string())
+        })
+        .unwrap_or_default();
+    Ok(format!("<w:p>{properties}<w:r>{run_properties}<w:t xml:space=\"preserve\">{}</w:t></w:r></w:p>", escape(&text)))
 }
 
 /// Byte range of each wanted paragraph, numbering paragraphs and tables the way the reader does.
@@ -342,5 +435,36 @@ mod tests {
         assert!(complex.contains("Word"), "got: {complex}");
         assert!(apply_edits(&sample(), &[edit(9, "x", "y")]).is_err());
         assert!(apply_edits(&sample(), &[]).is_err());
+    }
+
+    #[test]
+    fn inserts_a_paragraph_that_copies_the_look_of_another() {
+        let changes = DocChanges {
+            inserts: vec![crate::model::ParagraphInsert { after: 0, like: None, text: "A new <one> & more".into() }],
+            ..Default::default()
+        };
+        let edited = apply_changes(&sample(), &changes).unwrap();
+        assert_eq!(paragraph_texts(edited.clone()), ["Hello bold world", "A new <one> & more", "cell & one", "tab	here"]);
+    }
+
+    #[test]
+    fn deletes_paragraphs_and_combines_with_edits_and_inserts() {
+        // paragraph 3 holds a tab, so it is refused; the table cell's only paragraph is refused too
+        let tab = DocChanges { deletes: vec![crate::model::ParagraphDelete { position: 3, old_text: "tabhere".into() }], ..Default::default() };
+        assert!(apply_changes(&sample(), &tab).unwrap_err().to_string().contains("Word"));
+        let cell = DocChanges { deletes: vec![crate::model::ParagraphDelete { position: 2, old_text: "cell & one".into() }], ..Default::default() };
+        assert!(apply_changes(&sample(), &cell).unwrap_err().to_string().contains("table cell"));
+
+        // delete the first paragraph while editing the cell and adding a paragraph after it
+        let changes = DocChanges {
+            edits: vec![edit(2, "cell & one", "cell 1")],
+            inserts: vec![crate::model::ParagraphInsert { after: 0, like: None, text: "replacement".into() }],
+            deletes: vec![crate::model::ParagraphDelete { position: 0, old_text: "Hello bold world".into() }],
+        };
+        let texts = paragraph_texts(apply_changes(&sample(), &changes).unwrap());
+        assert_eq!(texts, ["replacement", "cell 1", "tab	here"]);
+
+        let stale = DocChanges { deletes: vec![crate::model::ParagraphDelete { position: 0, old_text: "other".into() }], ..Default::default() };
+        assert!(apply_changes(&sample(), &stale).unwrap_err().to_string().contains("changed since"));
     }
 }

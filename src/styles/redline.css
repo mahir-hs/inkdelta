@@ -114,3 +114,9 @@
 .redline .editable:hover { background: var(--hover); }
 .redline .editable:focus { background: var(--accent-soft); box-shadow: 0 0 0 4px var(--accent-soft); }
 .redline .editable.edited { background: var(--mod-soft); box-shadow: 0 0 0 4px var(--mod-soft); }
+
+/* Changes waiting to be saved: a new paragraph (green) or a paragraph about to be removed (struck through). */
+.redline .pending-insert { background: var(--ins-bg); border-left: 3px solid var(--ins); padding: 4px 10px; border-radius: 4px; }
+.redline .pending-delete { opacity: .55; text-decoration: line-through; border-left: 3px solid var(--del); padding-left: 10px; }
+.redline .pending-tag { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; opacity: .7; margin-right: 6px; text-decoration: none; }
+.redline .pending-undo { margin-left: 10px; font-size: 12px; padding: 1px 8px; text-decoration: none; }

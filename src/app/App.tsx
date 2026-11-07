@@ -78,6 +78,8 @@ export default function App() {
   // ---- keyboard: F3 / Shift+F3 move between changes, Ctrl+K opens the command palette
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      // Inside the terminal every key belongs to the shell (Ctrl+K, Ctrl+-, ...).
+      if ((e.target as Element | null)?.closest?.(".terminal-host")) return;
       const mod = (e.ctrlKey || e.metaKey) && !e.altKey;
       if (mod && (e.key === "=" || e.key === "+")) {
         e.preventDefault();

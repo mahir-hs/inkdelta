@@ -9,6 +9,7 @@
 //!   +-- docx     reads Word files into `model::Document`
 //!   +-- diff     compares two Documents into `model::DiffDocument`
 //!   +-- storage  saves review state and exports
+//!   +-- terminal a shell in a pseudo-terminal for the Terminal panel
 //!
 //! model - plain data types used by all of the above
 //! error - the one error type
@@ -24,10 +25,12 @@ mod error;
 mod git;
 mod model;
 mod storage;
+mod terminal;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .manage(terminal::Terminals::default())
         .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
             commands::startup_path,
@@ -78,6 +81,10 @@ pub fn run() {
             commands::git_merge,
             commands::git_abort_merge,
             commands::git_clone,
+            commands::terminal_start,
+            commands::terminal_write,
+            commands::terminal_resize,
+            commands::terminal_close,
         ])
         .run(tauri::generate_context!())
         .expect("error while running Inkdelta");

@@ -36,6 +36,38 @@ pub struct ParagraphEdit {
     pub new_text: String,
 }
 
+/// A new paragraph to add after an existing one.
+#[derive(Deserialize, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct ParagraphInsert {
+    /// Position of the paragraph the new one goes after.
+    pub after: usize,
+    /// Position of a paragraph whose look (style, font) the new one copies. Defaults to `after`.
+    pub like: Option<usize>,
+    pub text: String,
+}
+
+/// An existing paragraph to remove.
+#[derive(Deserialize, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct ParagraphDelete {
+    pub position: usize,
+    /// The text the user saw: checked against the file so a stale delete is refused.
+    pub old_text: String,
+}
+
+/// Everything the user changed in a document, saved together.
+#[derive(Deserialize, Clone, Debug, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct DocChanges {
+    #[serde(default)]
+    pub edits: Vec<ParagraphEdit>,
+    #[serde(default)]
+    pub inserts: Vec<ParagraphInsert>,
+    #[serde(default)]
+    pub deletes: Vec<ParagraphDelete>,
+}
+
 #[derive(Serialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct RepoInfo {

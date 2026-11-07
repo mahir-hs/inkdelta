@@ -60,12 +60,12 @@ pub async fn load_outline(source: Source) -> AppResult<Outline> {
     blocking(move || Ok(docx::outline(&load_document(&source)?))).await
 }
 
-/// Save text edits into the working copy of a Word document (the file on disk).
+/// Save text edits, new paragraphs and deleted paragraphs into the working copy of a Word document (the file on disk).
 #[tauri::command]
-pub async fn save_document_edits(repo: String, path: String, edits: Vec<ParagraphEdit>) -> AppResult<()> {
+pub async fn save_document_edits(repo: String, path: String, changes: DocChanges) -> AppResult<()> {
     blocking(move || {
         let file = git::working_file(&repo, &path)?;
-        let edited = docx::edit::apply_edits(&std::fs::read(&file)?, &edits)?;
+        let edited = docx::edit::apply_changes(&std::fs::read(&file)?, &changes)?;
         storage::replace_file(&file, &edited)
     })
     .await
@@ -296,4 +296,45 @@ pub async fn git_abort_merge(repo: String) -> AppResult<String> {
 #[tauri::command]
 pub async fn git_clone(url: String, destination: String) -> AppResult<String> {
     blocking(move || cli::clone_repository(&url, &destination)).await
+}
+
+// ============================================================ terminal
+
+/// Start a shell in `cwd`. Output reaches the UI through `on_data` (base64 bytes); `on_exit` fires when the shell ends.
+#[tauri::command]
+pub fn terminal_start(
+    terminals: tauri::State<'_, crate::terminal::Terminals>,
+    cwd: String,
+    cols: u16,
+    rows: u16,
+    on_data: tauri::ipc::Channel<String>,
+    on_exit: tauri::ipc::Channel<()>,
+) -> AppResult<u32> {
+    use base64::Engine;
+    terminals.start(
+        &cwd,
+        cols,
+        rows,
+        move |bytes| {
+            let _ = on_data.send(base64::engine::general_purpose::STANDARD.encode(bytes));
+        },
+        move || {
+            let _ = on_exit.send(());
+        },
+    )
+}
+
+#[tauri::command]
+pub fn terminal_write(terminals: tauri::State<'_, crate::terminal::Terminals>, id: u32, data: String) -> AppResult<()> {
+    terminals.write(id, data.as_bytes())
+}
+
+#[tauri::command]
+pub fn terminal_resize(terminals: tauri::State<'_, crate::terminal::Terminals>, id: u32, cols: u16, rows: u16) -> AppResult<()> {
+    terminals.resize(id, cols, rows)
+}
+
+#[tauri::command]
+pub fn terminal_close(terminals: tauri::State<'_, crate::terminal::Terminals>, id: u32) {
+    terminals.close(id);
 }

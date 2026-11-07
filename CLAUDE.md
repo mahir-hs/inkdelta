@@ -20,7 +20,7 @@ Read `ARCHITECTURE.md` (map, rules, where to change things) and `README.md` befo
 pnpm app                                   # dev (first run compiles Rust, a few minutes)
 pnpm exec tauri build --no-bundle          # release exe: src-tauri/target/release/inkdelta.exe (~2 min)
 pnpm exec tsc --noEmit                     # type-check the UI
-cargo test --manifest-path src-tauri/Cargo.toml    # 44 backend tests (Git against throwaway repos)
+cargo test --manifest-path src-tauri/Cargo.toml    # 47 backend tests (Git against throwaway repos, one real shell)
 inkdelta.exe <folder>                      # open a project directly
 ```
 Installers (.msi/.exe) are not built: Tauri would download WiX/NSIS to C:. CI for Windows/macOS/Linux is `.github/workflows/release.yml` (never run).
@@ -41,10 +41,25 @@ with Node (global `WebSocket`). Take screenshots with `Page.captureScreenshot` a
   `D:\DevData\cargo\registry\src\*` instead of guessing.
 
 ## What exists
-- **docx/**: reads Word files (reader), `edit.rs` patches paragraph text in place (formatting/images untouched, stale/complex paragraphs refused).
+- **docx/**: reads Word files (reader), `edit.rs` patches paragraph text in place (formatting/images untouched, stale/complex paragraphs refused) and can insert
+  a new paragraph after one (copies a nearby paragraph's style) or delete a plain one (`apply_changes`, `DocChanges` in `model/source.rs`).
 - **diff/**: paragraph alignment + word diff. **git/**: libgit2 for local work (history, status, commit, branches, stash, graph,
   conflicts, line-level staging in `lines.rs`); the installed `git` only for fetch/pull/push/clone/merge (`cli.rs`).
 - **ai.rs**: AI via command-line tool (stdin) / Anthropic API / OpenAI-compatible (OpenRouter, Ollama) using `ureq`.
+- **Terminal panel** (`terminal`, bottom, activity bar): a real PowerShell (`$SHELL` elsewhere) in the project folder through a pseudo-terminal.
+  Backend `terminal.rs` (`portable-pty`, ConPTY) + commands `terminal_*`; output goes to the UI as base64 bytes over a Tauri `Channel`.
+  UI: xterm.js (`@xterm/xterm`, `@xterm/addon-fit`). `features/terminal/session.ts` keeps the screen and the shell ALIVE OUTSIDE React, because
+  dockview unmounts a hidden panel (switching tabs or closing the panel does not end the shell; Restart does). Buttons type `claude` / `codex`.
+  After the shell has been quiet for 1.5 s the app refreshes Git status (files changed by a tool show up on their own). App shortcuts
+  (Ctrl+K, zoom keys) are ignored inside `.terminal-host`. Windows ConPTY asks the terminal for the cursor position at start (`ESC[6n`);
+  xterm.js answers it, a bare test must answer `ESC[1;1R` itself.
+- **Ask AI chat** (panel `ask`, left icon bar + AI menu): `features/ai/chat.ts` (context, prompt, reply parsing, no UI), `store/chat.ts`
+  (messages are in memory only, never saved), `features/ai/AskPanel.tsx`. The user picks what the AI sees (selected text / a section / whole
+  document / a review comment / nothing) and can open "Exactly what will be sent". Each message is one CLI call; earlier turns are repeated
+  in the prompt. The AI answers in plain text and, only if asked to change the document, ends with a fenced ```inkdelta JSON block
+  (edits / inserts / deletes by paragraph number). Proposals are ticked, then become pending changes in `store/docEdits.ts`
+  (shown in the reading view: green new paragraph, struck-through removal), and the user presses Save. Selection capture: every reading-view
+  paragraph has `data-pos`; `store/chat.ts` listens to `selectionchange` for the whole app lifetime.
 - **UI** (`src/`): dockview docking, zustand stores (`store/`), menu bar (File/Git/View/AI) in `app/TitleBar.tsx` + `app/menus.ts`,
   panels in `features/*`, 8 themes + accents + document font/size + zoom, Reading mode is the default view.
 - Layout: starts as just the page; panels open from the left icon bar; "View > Customize layout" assigns each panel
@@ -53,29 +68,33 @@ with Node (global `WebSocket`). Take screenshots with `Page.captureScreenshot` a
 ## Verified vs not verified
 Verified (real window + real Git): staging, commit, branches, stash, merge-conflict resolution, per-line staging,
 history comparison, in-app editing saved into the .docx and committed, themes, zoom, docking with real mouse, menu bar,
-layout customization, AI flow with a stand-in CLI tool.
-**Not verified:** the AI with a REAL provider (Claude Code `claude -p`, Codex `codex exec -`, OpenRouter, Ollama, Anthropic key);
+layout customization, AI flow with a stand-in CLI tool, **Ask AI chat with a stand-in CLI tool** (select text, reword, add a paragraph,
+remove a paragraph, multi-turn history in the prompt, ignored out-of-scope suggestions, Save into the real .docx and re-read it).
+Terminal panel verified in the real window: starts in the project folder, typing works, `claude --version` found on PATH, Claude Code's full-screen
+UI renders and exits, the shell survives a tab switch, files made by the shell appear in Source control by themselves, Ctrl+K reaches the shell,
+terminal size matches the shell's idea of it, closing the app ends the shell (no orphan).
+**Not verified:** the AI (review flow AND Ask AI chat) with a REAL provider (Claude Code `claude -p`, Codex `codex exec -`, OpenRouter, Ollama, Anthropic key);
 pull/push against GitHub (only a local bare repo); native file/folder pickers, Export HTML, Print, "Compare two files";
-macOS/Linux builds; line staging with CRLF files; Match-system theme following live OS changes.
+macOS/Linux builds (the terminal's `$SHELL` path in particular); copy/paste inside the terminal with a real mouse; line staging with CRLF files; Match-system theme following live OS changes.
 
 ## Known limits
-Edit text only (no add/delete paragraphs; paragraphs with equations/tabs/breaks/pictures/fields are read-only, ~533 of 579 editable in the paper).
+Edit text, add plain paragraphs, delete plain paragraphs (paragraphs with equations/tabs/breaks/pictures/fields are read-only, ~533 of 579 editable
+in the paper; the only paragraph of a table cell and section-break paragraphs cannot be deleted; no new tables or images).
 Word conflicts: keep one whole version. API keys are stored in plain text in localStorage. AI picks paragraphs by simple word overlap (max 6).
 
 ## NEXT SESSION: planned work (owner confirmed, in this order)
 The review-only AI is "too rigid". The owner wants AI usable for ANY task, with the company-provided CLI as the main route.
-1. **"Ask AI" chat panel (dock panel `ask`)**: free-text prompts with history shown in the panel; the user picks what the AI sees
-   (selected text / current section / whole paper / a review comment). Replies appear and can be applied as pending edits
-   (reuse `store/docEdits.ts`, `features/ai/suggest.ts` parsing, `ai.rs`). Needs a way to feed back multi-turn context
-   (send prior turns in the prompt; the CLI call is one-shot). Add paragraph INSERT/DELETE to `docx/edit.rs` so "write a new section" works.
-2. **Real terminal panel** (PTY + xterm.js, e.g. `portable-pty` crate) opened in the project folder so the owner can run
-   `claude` / `codex` interactively. Note Claude Code edits text files, not .docx; refresh the app on file changes.
+1. DONE (built and checked with a stand-in CLI, NOT with the real `claude -p` yet): the "Ask AI" chat panel and paragraph insert/delete. See "What exists".
+   Gotcha found: in this WebView2 (Chromium 157) `element.scrollIntoView()` returns a Promise, so never use it as a one-line `useEffect(() => el.scrollIntoView())`
+   (React takes it for a cleanup function and the whole UI goes blank). Use a block body.
+2. DONE: the real terminal panel (see "What exists"). Note Claude Code edits text files, not .docx. Possible follow-ups: several terminals,
+   choose the shell (cmd, Git Bash), reload the open document when its file changes on disk.
 3. (Info only, NOT a task.) The owner asked a QUESTION about AI history; they did NOT ask for a CLI-only or privacy mode. Do not build one
    unless they ask. Facts to answer honestly if it comes up: Inkdelta stores NO prompts/replies; the CLI keeps its own local transcripts
    under `C:\Users\Administrator\.claude\` (accepted C: exception); Claude Code does not show in claude.ai chat history (believed,
    unverified); company/Anthropic server-side retention is set by the account policy and cannot be checked from the app.
    The owner uses an official company Claude account via the Claude Code CLI, so keep the CLI route first-class.
-4. Show the exact full prompt in the "Send" confirmation (today it lists only the paragraphs). "Send" means: the app silently spawns
+4. Show the exact full prompt in the review-comment "Send" confirmation (`SuggestionDialog`; the Ask AI chat already has "Exactly what will be sent"). "Send" means: the app silently spawns
    the CLI (`cmd /C claude -p`, no window), writes the prompt to its stdin and reads stdout. One shot, no memory, not the web UI.
 
 ## Older next steps

@@ -1,14 +1,29 @@
 // The only place the UI talks to the Rust backend.
 // One function per backend command (src-tauri/src/commands.rs).
 
-import { invoke } from "@tauri-apps/api/core";
+import { Channel, invoke } from "@tauri-apps/api/core";
 import type {
   BranchInfo, CommitFile, ConflictInfo, ConflictPart, FileChange, FileDiff, Graph, GitToolInfo, HunkChoice, Identity,
   LineRef, MergeSide, RemoteInfo, RepoStatus, StashInfo,
 } from "./gitTypes";
 import type { DiffDocument, Outline, RepoInfo, Source, VersionInfo } from "./types";
 
+/** Raw bytes the shell printed (the backend sends them as base64). */
+const fromBase64 = (text: string): Uint8Array => Uint8Array.from(atob(text), (c) => c.charCodeAt(0));
+
 export const api = {
+  /** Start a shell in `cwd`. Returns its id. `onData` gets everything the shell prints. */
+  terminalStart: (cwd: string, cols: number, rows: number, onData: (bytes: Uint8Array) => void, onExit: () => void) => {
+    const data = new Channel<string>();
+    data.onmessage = (text) => onData(fromBase64(text));
+    const exit = new Channel<void>();
+    exit.onmessage = onExit;
+    return invoke<number>("terminal_start", { cwd, cols, rows, onData: data, onExit: exit });
+  },
+  terminalWrite: (id: number, data: string) => invoke<void>("terminal_write", { id, data }),
+  terminalResize: (id: number, cols: number, rows: number) => invoke<void>("terminal_resize", { id, cols, rows }),
+  terminalClose: (id: number) => invoke<void>("terminal_close", { id }),
+
   startupPath: () => invoke<string | null>("startup_path"),
 
   // ---- documents and comparison
@@ -24,8 +39,15 @@ export const api = {
   saveTextFile: (path: string, content: string) => invoke<void>("save_text_file", { path, content }),
   aiComplete: (config: { kind: string; model: string; baseUrl: string; apiKey: string; command: string }, system: string, user: string) =>
     invoke<string>("ai_complete", { config, system, user }),
-  saveDocumentEdits: (repo: string, path: string, edits: { position: number; oldText: string; newText: string }[]) =>
-    invoke<void>("save_document_edits", { repo, path, edits }),
+  saveDocumentEdits: (
+    repo: string,
+    path: string,
+    changes: {
+      edits: { position: number; oldText: string; newText: string }[];
+      inserts: { after: number; like: number | null; text: string }[];
+      deletes: { position: number; oldText: string }[];
+    },
+  ) => invoke<void>("save_document_edits", { repo, path, changes }),
 
   // ---- Git: reading
   gitToolInfo: () => invoke<GitToolInfo>("git_tool_info"),

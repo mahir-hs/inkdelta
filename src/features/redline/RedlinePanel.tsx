@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import type { VersionInfo } from "../../api/types";
 import { fileName, versionKey, versionLabel } from "../../lib/format";
 import { S } from "../../strings";
-import { useDocEdits } from "../../store/docEdits";
+import { pendingCount, useDocEdits } from "../../store/docEdits";
 import { EMPTY_KEY, useWorkspace } from "../../store/workspace";
 import { ChangeRuler } from "./ChangeRuler";
 import { exportRedline } from "./exportRedline";
@@ -26,7 +26,7 @@ export function RedlinePanel() {
       ?.scrollIntoView({ block: "center", behavior: "smooth" });
   }, [scrollRequest, scroller]);
 
-  const pendingEdits = useDocEdits((s) => s.edits.size);
+  const pendingEdits = useDocEdits(pendingCount);
   // Editing happens on the working copy, the file on disk.
   const canEdit = reading && !loose && newKey === "workdir";
   const hasSources = !!loose || (!!repo && !!file && !!oldKey && !!newKey);
@@ -171,7 +171,7 @@ function EditBar({ count }: { count: number }) {
   const { discard, save, saveAndCommit } = useDocEdits.getState();
   return (
     <div className="editbar" role="status">
-      <span>{count} paragraph{count === 1 ? "" : "s"} edited</span>
+      <span>{count} change{count === 1 ? "" : "s"} waiting</span>
       <button className="quiet" onClick={() => discard()}>Discard</button>
       <button onClick={() => void save()}>Save</button>
       <button className="primary" onClick={() => void saveAndCommit()}>Save &amp; commit…</button>

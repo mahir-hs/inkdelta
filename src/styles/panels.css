@@ -394,3 +394,39 @@ button.ai-button { color: var(--accent); }
 .ai-comment-row { height: auto; min-height: 36px; align-items: flex-start; padding: 8px 10px; }
 .ai-comment-row .row-icon { margin-top: 3px; }
 .ai-comment-row:disabled { opacity: 0.55; }
+
+/* ---------- Ask AI chat ---------- */
+.ask-panel { height: 100%; display: flex; flex-direction: column; min-height: 0; }
+.ask-head { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--line); color: var(--accent); }
+.ask-service { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); font-weight: 560; }
+.ask-messages { flex: 1; min-height: 0; overflow: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.ask-empty { color: var(--text-2); line-height: 1.55; }
+.ask-note { color: var(--text-3); font-size: var(--text-sm); margin: 4px 0; }
+.ask-chips { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin-top: 10px; }
+.ask-msg { padding: 10px 12px; border-radius: 12px; max-width: 100%; }
+.ask-msg p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.5; }
+.ask-msg.user { align-self: flex-end; background: var(--accent-soft); }
+.ask-msg.user small { display: block; margin-top: 6px; color: var(--text-3); }
+.ask-msg.assistant { background: var(--raised); box-shadow: inset 0 0 0 1px var(--line); }
+.ask-msg.error { background: var(--mod-soft); color: var(--text-2); }
+.ask-thinking { color: var(--text-3); }
+.ask-copy { margin-top: 8px; }
+.ask-apply { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+.ask-composer { border-top: 1px solid var(--line); padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
+.ask-scope { display: flex; flex-direction: column; gap: 6px; }
+.ask-scope label { display: flex; align-items: center; gap: 8px; }
+.ask-scope label span { color: var(--text-3); font-size: var(--text-sm); white-space: nowrap; }
+.ask-scope select { min-width: 0; flex: 1; }
+.ask-composer textarea { resize: vertical; width: 100%; box-sizing: border-box; font: inherit; }
+.ask-send { display: flex; align-items: flex-start; gap: 8px; }
+.ask-preview { flex: 1; min-width: 0; color: var(--text-3); font-size: var(--text-sm); }
+.ask-preview pre { max-height: 220px; overflow: auto; white-space: pre-wrap; background: var(--pane); padding: 8px; border-radius: 8px; margin: 6px 0 0; }
+.ask-msg .ai-edit del, .ask-msg .ai-edit ins { max-height: 9em; overflow: auto; }
+
+/* ---------- Terminal ---------- */
+.terminal-panel { height: 100%; display: flex; flex-direction: column; min-height: 0; }
+.terminal-bar { display: flex; align-items: center; gap: 6px; padding: 6px 10px; border-bottom: 1px solid var(--line); }
+.terminal-cwd { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; direction: rtl; text-align: left; color: var(--text-3); font-size: var(--text-sm); }
+.terminal-box { flex: 1; min-height: 0; padding: 6px 0 0 10px; background: var(--pane); overflow: hidden; }
+.terminal-host { height: 100%; }
+.terminal-host .xterm-viewport { background: transparent !important; }

@@ -1,7 +1,7 @@
 // The narrow icon strip on the far left. Click an icon to bring that panel forward
 // (it re-opens the panel if you closed it).
 
-import { Sparkles, FileText, GitBranch, History, ListChecks, MessageSquare, ScrollText, Settings2, Rows3 } from "lucide-react";
+import { Bot, SquareTerminal, Sparkles, FileText, GitBranch, History, ListChecks, MessageSquare, ScrollText, Settings2, Rows3 } from "lucide-react";
 import type { ComponentType } from "react";
 import { useGit } from "../store/git";
 import { useUi } from "../store/ui";
@@ -18,9 +18,11 @@ const TOP: Item[] = [
   { id: "sourceControl", label: "Source control", Icon: GitBranch },
   { id: "graph", label: "History", Icon: History },
   { id: "reviewer", label: "Reviewer comments", Icon: ListChecks },
-  { id: "ai", label: "AI assistant", Icon: Sparkles },
+  { id: "ask", label: "Ask AI", Icon: Bot },
+  { id: "ai", label: "Review comments AI", Icon: Sparkles },
   { id: "changes", label: "Changes", Icon: Rows3 },
   { id: "wordComments", label: "Word comments", Icon: MessageSquare },
+  { id: "terminal", label: "Terminal", Icon: SquareTerminal },
   { id: "output", label: "Output", Icon: ScrollText },
 ];
 

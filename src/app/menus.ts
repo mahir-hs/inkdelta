@@ -45,6 +45,7 @@ export function viewMenu(): MenuItem[] {
 export function aiMenu(): MenuItem[] {
   const ai = useAi.getState();
   return [
+    { label: "Ask AI (chat)", onSelect: () => (ai.isConfigured() ? togglePanel("ask") : ai.openSettings(true)) },
     { label: ai.isConfigured() ? "Open the AI assistant" : "Set up the AI assistant…", onSelect: () => (ai.isConfigured() ? togglePanel("ai") : ai.openSettings(true)) },
     { label: "Suggest edits for the next open review comment", disabled: !ai.isConfigured(), onSelect: () => useAi.getState().startNext() },
     { label: "AI service and keys…", separator: true, onSelect: () => ai.openSettings(true) },

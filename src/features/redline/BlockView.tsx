@@ -50,12 +50,18 @@ function ParagraphView({ paragraph, context }: { paragraph: DiffParagraph; conte
   if (selected) classes.push("selected");
   if (paragraph.segments.length === 0) classes.push("empty");
 
+  const pendingDelete = useDocEdits((s) => !!context.editable && s.deletes.has(paragraph.position));
+  if (pendingDelete) classes.push("pending-delete");
+
   return (
+    <>
     <Tag
       className={classes.join(" ")}
       data-change={paragraph.change}
+      data-pos={paragraph.position}
       onClick={isChange && context.onSelectChange ? () => context.onSelectChange!(paragraph.change!) : undefined}
     >
+      {pendingDelete && <button className="pending-undo" onClick={() => useDocEdits.getState().unmarkDelete(paragraph.position)}>Keep this paragraph</button>}
       {isChange && <span className="change-number">{paragraph.change}</span>}
       {paragraph.listMarker && <span className="list-marker">{paragraph.listMarker}</span>}
       {context.editable && paragraph.editable && paragraph.kind !== "deleted" ? (
@@ -65,6 +71,24 @@ function ParagraphView({ paragraph, context }: { paragraph: DiffParagraph; conte
         <SegmentView key={i} segment={segment} images={context.images} />
       ))}
     </Tag>
+    {context.editable && <PendingInserts after={paragraph.position} />}
+    </>
+  );
+}
+
+/** New paragraphs waiting to be saved after a paragraph (from the Ask AI chat). */
+function PendingInserts({ after }: { after: number }) {
+  const inserts = useDocEdits((s) => s.inserts);
+  const mine = inserts.filter((i) => i.after === after);
+  return (
+    <>
+      {mine.map((i) => (
+        <p key={i.id} className="para pending-insert">
+          <span className="pending-tag">New paragraph</span> {i.text}
+          <button className="pending-undo" onClick={() => useDocEdits.getState().removeInsert(i.id)}>Remove</button>
+        </p>
+      ))}
+    </>
   );
 }
 

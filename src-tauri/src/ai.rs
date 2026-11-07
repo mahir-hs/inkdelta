@@ -175,8 +175,21 @@ mod tests {
         let address = listener.local_addr().unwrap();
         std::thread::spawn(move || {
             if let Ok((mut stream, _)) = listener.accept() {
-                let mut buffer = [0u8; 8192];
-                let _ = stream.read(&mut buffer);
+                // Read the whole request (headers, then the announced body) before answering,
+                // otherwise closing early can reset the client's connection mid-send.
+                let mut received = Vec::new();
+                let mut chunk = [0u8; 4096];
+                loop {
+                    let Ok(count) = stream.read(&mut chunk) else { break };
+                    if count == 0 { break; }
+                    received.extend_from_slice(&chunk[..count]);
+                    let text = String::from_utf8_lossy(&received).to_string();
+                    if let Some(end) = text.find("\r\n\r\n") {
+                        let length = text[..end].to_ascii_lowercase().split("content-length:").nth(1)
+                            .and_then(|v| v.lines().next()).and_then(|v| v.trim().parse::<usize>().ok()).unwrap_or(0);
+                        if received.len() >= end + 4 + length { break; }
+                    }
+                }
                 let reply = format!("HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}", body.len());
                 let _ = stream.write_all(reply.as_bytes());
             }

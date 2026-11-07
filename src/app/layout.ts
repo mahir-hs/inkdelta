@@ -6,7 +6,7 @@
 import type { DockviewApi, DockviewTheme } from "dockview-react";
 import { create } from "zustand";
 
-export type PanelId = "redline" | "documents" | "sourceControl" | "reviewer" | "changes" | "wordComments" | "graph" | "output" | "textDiff" | "ai";
+export type PanelId = "redline" | "documents" | "sourceControl" | "reviewer" | "changes" | "wordComments" | "graph" | "output" | "textDiff" | "ai" | "ask" | "terminal";
 
 export const PANEL_TITLES: Record<PanelId, string> = {
   redline: "Redline",
@@ -19,6 +19,8 @@ export const PANEL_TITLES: Record<PanelId, string> = {
   output: "Output",
   textDiff: "Diff",
   ai: "AI assistant",
+  ask: "Ask AI",
+  terminal: "Terminal",
 };
 
 const LAYOUT_KEY = "inkdelta.layout.v4";
@@ -38,7 +40,7 @@ export const DOCK_THEME: DockviewTheme = {
 export type Side = "left" | "right" | "bottom" | "off";
 export const DEFAULT_SIDES: Record<PanelId, Side> = {
   redline: "off", textDiff: "off", documents: "left", sourceControl: "left",
-  reviewer: "right", changes: "right", wordComments: "right", ai: "right", graph: "bottom", output: "bottom",
+  reviewer: "right", changes: "right", wordComments: "right", ai: "right", ask: "right", terminal: "bottom", graph: "bottom", output: "bottom",
 };
 const SIDES_KEY = "inkdelta.sides";
 
@@ -141,7 +143,8 @@ export function showPanel(id: PanelId) {
   if (sibling) position = { referencePanel: sibling, direction: "within" };
   else if (side === "bottom") position = { direction: "below" };
   else position = api.getPanel("redline") ? { referencePanel: "redline", direction: side } : { direction: side };
-  const size = side === "bottom" ? { initialHeight: 250 } : { initialWidth: side === "left" ? 290 : 360 };
+  // The terminal opens taller: full-screen tools like Claude Code need room.
+  const size = side === "bottom" ? { initialHeight: id === "terminal" ? 400 : 250 } : { initialWidth: side === "left" ? 290 : 360 };
   add(api, id, { position, ...size });
   api.getPanel(id)?.api.setActive();
 }

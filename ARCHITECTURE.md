@@ -8,7 +8,8 @@ a React + TypeScript UI draws it in a VS Code-style dockable workspace.
 ```
  ┌──────────────────────────── UI (src/, React + TypeScript) ─────────────────────────────┐
  │  app/        shell: App, dock layout, activity bar, status bar, command palette        │
- │  features/   one folder per panel: redline · documents · sourcecontrol · graph ·       │
+ │  features/   one folder per panel: redline · documents · sourcecontrol · graph · ai ·  │
+ │              terminal ·                                                                │
  │              review · sidebar (changes list, Word comments) · output                   │
  │  store/      shared state (zustand): workspace · git · review · ui                     │
  │  ui/         dialogs, menus, toasts (used by everything)                               │
@@ -25,7 +26,8 @@ a React + TypeScript UI draws it in a VS Code-style dockable workspace.
 │     │              cli.rs: fetch/pull/push/                                            │
 │     │              clone/merge (the Git installed on the computer)                     │
  │     │              through the Git installed on the computer                           │
- │     └── storage.rs review progress file, export                                        │
+ │     ├── storage.rs review progress file, export                                        │
+ │     └── terminal.rs a shell in a pseudo-terminal (the Terminal panel)                  │
  │  model/        plain data types shared by all of the above                             │
  │  error.rs      one error type                                                          │
  └────────────────────────────────────────────────────────────────────────────────────────┘
@@ -86,7 +88,7 @@ component in `features/`, add its id to `PanelId` and `PANEL_TITLES` in `layout.
 
 ## Tests
 
-* `cargo test --manifest-path src-tauri/Cargo.toml` runs 37 backend tests, including Git
+* `cargo test --manifest-path src-tauri/Cargo.toml` runs 47 backend tests, including Git
   against throwaway repositories (created under `src-tauri/target/test-repos`) and push/pull
   against a local bare repository acting as the server.
 * `INKDELTA_REPO=… INKDELTA_FILE=… INKDELTA_OLD_REV=… cargo test smoke -- --ignored --nocapture`
@@ -99,6 +101,6 @@ component in `features/`, add its id to `PanelId` and `PANEL_TITLES` in `layout.
 * Moved paragraphs show as deleted + inserted.
 * Images are compared by content hash (changed / added / removed), not pixel by pixel.
 * Conflicts inside a Word file are resolved by keeping one whole version (after viewing a redline of the two); there is no merging of the text of two Word versions.
-* In-app editing (`docx/edit.rs`) changes the text of existing paragraphs only: it cannot add or delete paragraphs, and paragraphs with equations, tabs, line breaks, pictures or fields are read-only (edit those in Word). It patches the original XML so formatting, images and styles survive; a paragraph whose text no longer matches what you saw is refused. Saving fails (with a clear message) if the file is open in Word.
+* In-app editing (`docx/edit.rs`) changes the text of existing paragraphs and can add a plain paragraph after one or delete a plain paragraph (all positions refer to the file as the user saw it; the only paragraph of a table cell and paragraphs holding a section break cannot be deleted, and new tables or images cannot be added). Paragraphs with equations, tabs, line breaks, pictures or fields are read-only (edit those in Word). It patches the original XML so formatting, images and styles survive; a paragraph whose text no longer matches what you saw is refused. Saving fails (with a clear message) if the file is open in Word.
 * Line-by-line staging works for plain text files that were added or modified; Word files, other binaries and deleted files are staged whole.
 * Rebase beyond `pull --rebase` and cherry-pick are not built.
