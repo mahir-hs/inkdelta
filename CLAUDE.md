@@ -15,6 +15,16 @@ Read `ARCHITECTURE.md` (map, rules, where to change things) and `README.md` befo
 - The user's real repo `D:\Personal\colab\pneumonia` holds their own `.inkdelta/review.json`. Do not delete or modify it.
   Test against a COPY (`D:\Scratch\inkdelta-test-repo`).
 
+## The website (docs/)
+Product page published with GitHub Pages: `docs/index.html`, `docs/assets/{css,js,fonts}`. No build step. Design idea: the page is a manuscript
+(pale proof paper, indigo ink, margin notes), the app appears as dark "specimen" windows in its real colours, the hero headline revises itself
+once (strike, insert, tidy) and a real word-level diff (`js/diff.js`) powers the paragraph scrubber and the Redline window. Scenes in
+`js/scenes.js` play when scrolled into view and show their final state under `prefers-reduced-motion`. The "Errata" section lists what is
+verified and NOT verified: keep it honest and in step with the section below. The page uses an INVENTED sample manuscript: never put the owner's
+real paper text, commit hashes or paths on it. Preview: `python -m http.server 8099 --bind 127.0.0.1` in `docs/`; screenshots by driving
+headless Edge over the DevTools protocol (profile on D:). `.github/workflows/pages.yml` deploys it; Pages source must be "GitHub Actions".
+The repo has NO LICENSE file yet (owner has not chosen one); do not invent one.
+
 ## Build, run, test
 ```
 pnpm app                                   # dev (first run compiles Rust, a few minutes)
