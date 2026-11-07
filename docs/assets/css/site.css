@@ -392,3 +392,10 @@ footer a { color: #c9ccff; }
 .dl-note { margin: 0.6rem auto 0; max-width: 44rem; font: 0.88rem/1.55 var(--sans); color: #9fa2d0; }
 .dl pre.code { margin: 2.4rem auto 0; text-align: left; }
 @media (prefers-reduced-motion: reduce) { .dl-btn, .dl-card { transition: none; } .dl-btn:hover { transform: none; } }
+
+/* ---------- the download panel sits right under the banner, as a dark slab on the light page ---------- */
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.dl-slab { max-width: 72rem; margin: clamp(2rem, 5vw, 3.5rem) auto 0; padding: clamp(2.2rem, 5vw, 3.6rem) clamp(1rem, 3vw, 2.6rem) clamp(1.6rem, 3vw, 2.4rem); background: var(--ink); color: #e7e8fb; border-radius: 2rem; position: relative; overflow: hidden; width: calc(100% - 2 * var(--gutter)); box-shadow: 0 50px 100px -40px rgba(20, 21, 58, 0.7), 0 12px 30px -12px rgba(20, 21, 58, 0.4); }
+.dl-slab::before { content: ""; position: absolute; left: 50%; top: -20%; width: 60rem; height: 28rem; transform: translateX(-50%); background: radial-gradient(50% 50% at 50% 50%, rgba(111, 125, 255, 0.3), transparent 70%); pointer-events: none; }
+.dl-slab > * { position: relative; }
+.dl-slab .dl-hero { margin-top: 0; }
