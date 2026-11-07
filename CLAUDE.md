@@ -81,7 +81,7 @@ with Node (global `WebSocket`). Take screenshots with `Page.captureScreenshot` a
   NOT tested: a real update installing, and the restart.
   RELEASE: bump the version in package.json, tauri.conf.json and Cargo.toml; push a tag `vX.Y.Z`; CI builds a DRAFT with installers for all systems; the
   owner publishes it (updates and the site's Download button only see PUBLISHED releases). Do not move or delete tags (blocked as destructive; use a new version).
-  The site and README Download buttons point to `releases/latest`.
+  The site's Download section (`docs/assets/js/download.js`) reads the latest PUBLISHED release from the GitHub API, fills the buttons from the asset names (regexes in FILES: update them if installer names change), detects the visitor's OS/chip and lights up the matching file; the hero button downloads that file directly; nothing sends visitors to GitHub. Before a release is published it shows "not published yet". The site has no Status section any more (owner did not want it); the honest note sits under the downloads. README keeps a Download link to `releases/latest`.
 - **Ask AI chat** (panel `ask`, left icon bar + AI menu): `features/ai/chat.ts` (context, prompt, reply parsing, no UI), `store/chat.ts`
   (messages are in memory only, never saved), `features/ai/AskPanel.tsx`. The user picks what the AI sees (selected text / a section / whole
   document / a review comment / nothing) and can open "Exactly what will be sent". Each message is one CLI call; earlier turns are repeated

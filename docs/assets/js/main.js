@@ -3,6 +3,7 @@
 
 import "./lens.js";
 import "./scroll.js";
+import "./download.js";
 import { setupRedline } from "./redline.js";
 import { setupScenes } from "./scenes.js";
 import { setupThemes } from "./themes.js";

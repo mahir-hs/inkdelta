@@ -351,3 +351,44 @@ footer a { color: #c9ccff; }
 .btn.primary { background: var(--ink); color: #fff; }
 .btn.primary:hover { background: var(--blue-deep); border-color: var(--blue-deep); }
 .btn svg { width: 1.05rem; height: 1.05rem; }
+
+/* ---------- download: straight from the page ---------- */
+.dl { padding-bottom: 0; }
+.dl-center { text-align: center; max-width: 64rem; }
+.dl .scene-head { text-align: center; }
+.dl h2 { transform: none; }
+.dl-hero { display: flex; flex-direction: column; align-items: center; gap: 0.2rem; margin: 2rem 0 3.2rem; }
+.dl-icon { width: 7.4rem; height: 7.4rem; border-radius: 2.1rem; display: grid; place-items: center; color: #f1f2f8; background: linear-gradient(145deg, rgba(143, 155, 255, 0.35), rgba(91, 105, 240, 0.18)); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22), 0 30px 80px -20px rgba(111, 125, 255, 0.7), 0 0 0 10px rgba(143, 155, 255, 0.06); margin-bottom: 1.4rem; }
+.dl-icon svg { width: 3.8rem; height: 3.8rem; display: none; --dl-belly: #2b3fb8; }
+.dl-icon .ic-none { display: block; }
+.dl-icon[data-os="windows"] .ic-none, .dl-icon[data-os="macos"] .ic-none, .dl-icon[data-os="linux"] .ic-none { display: none; }
+.dl-icon[data-os="windows"] .ic-win, .dl-icon[data-os="macos"] .ic-mac, .dl-icon[data-os="linux"] .ic-linux { display: block; }
+.dl-title { margin: 0; font-family: var(--serif); font-size: clamp(1.5rem, 2.6vw, 2.1rem); color: #f1f2f8; }
+.dl-version:empty { display: none; }
+.dl-big { margin-top: 1rem; padding: 1.05rem 2.1rem; font-size: 1.08rem; background: #f1f2f8; color: var(--ink); border-color: #f1f2f8; }
+.dl-big:hover { background: var(--blue); border-color: var(--blue); color: #fff; }
+.dl-sub { margin: 0.7rem 0 0; font: 0.92rem var(--sans); color: #b9bbe3; min-height: 1.4em; }
+
+.dl-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; text-align: left; }
+@media (max-width: 860px) { .dl-grid { grid-template-columns: 1fr; } }
+.dl-card { position: relative; padding: 1.3rem 1.2rem 1.2rem; border-radius: 1.4rem; background: rgba(255, 255, 255, 0.045); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12); display: flex; flex-direction: column; gap: 0.5rem; transition: box-shadow 0.3s, background 0.3s; }
+.dl-card.rec { background: rgba(143, 155, 255, 0.13); box-shadow: inset 0 0 0 1.5px #8f9bff, 0 24px 60px -24px rgba(111, 125, 255, 0.8); }
+.dl-card-head { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.5rem; color: #f1f2f8; }
+.dl-card-head h3 { margin: 0; font: 600 1.2rem var(--sans); }
+.dl-os { width: 2.2rem; height: 2.2rem; flex: none; --dl-belly: #14153a; }
+.dl-tag { display: none; margin-left: auto; font: 600 0.75rem var(--sans); color: #aab3ff; background: rgba(143, 155, 255, 0.2); border-radius: 999px; padding: 0.25rem 0.6rem; white-space: nowrap; }
+.dl-card.rec .dl-tag { display: inline-block; }
+.dl-btn .dl-name { min-width: 0; }
+.dl-btn { display: flex; align-items: center; gap: 0.65rem; padding: 0.8rem 0.95rem; border-radius: 0.9rem; font: 560 0.95rem var(--sans); color: #f1f2f8; text-decoration: none; background: rgba(255, 255, 255, 0.07); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1); transition: background 0.2s, transform 0.2s var(--ease); }
+.dl-btn svg { width: 1.05rem; height: 1.05rem; flex: none; color: #aab3ff; }
+.dl-btn em { font-style: normal; color: #9fa2d0; font-weight: 450; }
+.dl-btn .dl-size { margin-left: auto; white-space: nowrap; color: #9fa2d0; font-weight: 450; font-variant-numeric: tabular-nums; }
+.dl-btn:hover { background: rgba(255, 255, 255, 0.14); transform: translateY(-1px); color: #fff; }
+.dl-btn.pick { background: #f1f2f8; color: var(--ink); box-shadow: none; }
+.dl-btn.pick svg, .dl-btn.pick em, .dl-btn.pick .dl-size { color: var(--blue-deep); }
+.dl-btn.pick:hover { background: #fff; }
+.dl-btn[aria-disabled="true"] { opacity: 0.45; pointer-events: none; }
+.dl-state { margin: 1.4rem 0 0; font: 0.95rem var(--sans); color: #c9ccff; min-height: 1.4em; }
+.dl-note { margin: 0.6rem auto 0; max-width: 44rem; font: 0.88rem/1.55 var(--sans); color: #9fa2d0; }
+.dl pre.code { margin: 2.4rem auto 0; text-align: left; }
+@media (prefers-reduced-motion: reduce) { .dl-btn, .dl-card { transition: none; } .dl-btn:hover { transform: none; } }
