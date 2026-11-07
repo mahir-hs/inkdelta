@@ -16,6 +16,7 @@
 //!
 //! See ARCHITECTURE.md at the project root for the bigger picture.
 
+mod ai;
 mod commands;
 mod diff;
 mod docx;
@@ -37,6 +38,7 @@ pub fn run() {
             commands::load_review_state,
             commands::save_review_state,
             commands::save_document_edits,
+            commands::ai_complete,
             commands::save_text_file,
             commands::git_tool_info,
             commands::repo_status,

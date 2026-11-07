@@ -3,6 +3,8 @@
 import { open } from "@tauri-apps/plugin-dialog";
 import { useEffect, useMemo, useState } from "react";
 import { api, errorMessage } from "../../api/commands";
+import { useAi } from "../../store/ai";
+import { useReview } from "../../store/review";
 import type { Outline, RepoInfo, Source } from "../../api/types";
 import { fileName } from "../../lib/format";
 import { S } from "../../strings";
@@ -58,6 +60,8 @@ export function ReviewerPanel(props: Props) {
   const groups = useMemo(() => (outline ? groupComments(outline.items, S.tabReviewer) : []), [outline]);
   const all = groups.flatMap((g) => g.comments);
   const doneCount = all.filter((c) => isAddressed(state.items[c.id])).length;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => useReview.getState().setComments(all.map((c) => ({ id: c.id, text: c.text }))), [outline]);
 
   async function browse() {
     const chosen = await open({ multiple: false, filters: [{ name: "Word document", extensions: ["docx"] }] });
@@ -115,6 +119,7 @@ export function ReviewerPanel(props: Props) {
             {visible.map((comment) => (
               <CommentCard
                 key={comment.id}
+                commentId={comment.id}
                 marker={comment.marker}
                 text={comment.text}
                 item={state.items[comment.id] ?? emptyItem()}
@@ -131,6 +136,7 @@ export function ReviewerPanel(props: Props) {
 }
 
 interface CardProps {
+  commentId: string;
   marker?: string;
   text: string;
   item: ItemState;
@@ -139,7 +145,7 @@ interface CardProps {
   onJumpToExcerpt: (excerpt: string) => void;
 }
 
-function CommentCard({ marker, text, item, onChange, selectedExcerpt, onJumpToExcerpt }: CardProps) {
+function CommentCard({ commentId, marker, text, item, onChange, selectedExcerpt, onJumpToExcerpt }: CardProps) {
   const [showNote, setShowNote] = useState(item.note.length > 0);
   const canLink = selectedExcerpt !== null && !item.links.includes(selectedExcerpt);
 
@@ -174,6 +180,7 @@ function CommentCard({ marker, text, item, onChange, selectedExcerpt, onJumpToEx
           {S.linkChange}
         </button>
         {!showNote && <button onClick={() => setShowNote(true)}>{S.addNote}</button>}
+        <button className="ai-button" title="Suggest edits for this comment with AI" onClick={() => useAi.getState().start(text, commentId)}>Suggest edits with AI</button>
       </div>
 
       {showNote && (

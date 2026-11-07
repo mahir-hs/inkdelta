@@ -13,6 +13,9 @@ const SAVE_DELAY_MS = 400;
 interface ReviewStore {
   state: ReviewState;
   loaded: boolean;
+  /** The reviewer's comments as read by the Review panel (the AI panel lists them too). */
+  comments: { id: string; text: string }[];
+  setComments: (comments: { id: string; text: string }[]) => void;
   /** Load the saved progress for a project (null = loose files, kept in the browser). */
   load: (repoRoot: string | null) => Promise<void>;
   setReviewerFile: (path: string | null) => void;
@@ -37,6 +40,8 @@ function scheduleSave(state: ReviewState) {
 export const useReview = create<ReviewStore>((set, get) => ({
   state: emptyReviewState(),
   loaded: false,
+  comments: [],
+  setComments: (comments) => set({ comments }),
 
   load: async (repoRoot) => {
     currentRoot = repoRoot;

@@ -14,6 +14,7 @@ import "./styles/redline.css";
 import "./styles/app.css";
 import "./styles/dock.css";
 import "./styles/panels.css";
+import "./styles/themes.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

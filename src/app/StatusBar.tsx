@@ -5,11 +5,13 @@ import { BranchChip } from "../features/sourcecontrol/BranchChip";
 import { S } from "../strings";
 import { useGit } from "../store/git";
 import { useWorkspace } from "../store/workspace";
+import { useZoom } from "../store/zoom";
 
 export function StatusBar() {
   const repo = useWorkspace((s) => s.repo);
   const diff = useWorkspace((s) => s.diff);
   const { status, busy, tool } = useGit();
+  const zoom = useZoom();
 
   return (
     <footer className="statusbar">
@@ -27,6 +29,9 @@ export function StatusBar() {
           <TriangleAlert size={13} /> Git not installed
         </span>
       )}
+      <button className="quiet zoom-chip" title="Zoom (Ctrl + / Ctrl - / Ctrl 0). Click to reset." onClick={() => zoom.reset()}>
+        {Math.round(zoom.level * 100)}%
+      </button>
       {diff && <span className="status-item">{diff.changeCount} changes · {S.stats(diff.stats.wordsAdded, diff.stats.wordsRemoved)}</span>}
     </footer>
   );

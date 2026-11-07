@@ -1,50 +1,59 @@
-// The window's title bar, drawn by the app (the native one is turned off for a cleaner look).
-//
-// Left: the brand and where you are (project, branch).  Centre: the command palette.
-// Right: minimise / maximise / close on Windows and Linux. macOS keeps its own traffic lights.
+// The window's title bar, drawn by the app: brand, the menu bar (File, Git, View, AI), where you are,
+// search, and the window buttons. Every feature is reachable from here without knowing a shortcut.
 
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { ChevronRight, Command, Copy, Minus, Square, X } from "lucide-react";
+import { ChevronRight, Command, Copy, Minus, Sparkles, Square, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useAi } from "../store/ai";
 import { useGit } from "../store/git";
 import { useUi } from "../store/ui";
 import { useWorkspace } from "../store/workspace";
+import { aiMenu, fileMenu, gitMenu, openMenuFor, viewMenu } from "./menus";
 
 export const IS_MAC = /Mac/i.test(navigator.userAgent);
 
 export function TitleBar() {
   const repo = useWorkspace((s) => s.repo);
-  const loose = useWorkspace((s) => s.loose);
   const branch = useGit((s) => s.status?.branch);
+  const aiReady = useAi((s) => s.config.preset !== "" && s.isConfigured());
   const setPaletteOpen = useUi((s) => s.setPaletteOpen);
+
+  const menus: [string, () => ReturnType<typeof fileMenu>][] = [
+    ["File", fileMenu],
+    ["Git", gitMenu],
+    ["View", viewMenu],
+  ];
 
   return (
     <header className="titlebar" data-tauri-drag-region>
-      <div className="titlebar-left" data-tauri-drag-region>
-        {IS_MAC && <span className="traffic-space" />}
-        <img className="brand-mark" src="/logo.svg" alt="" width={20} height={20} />
-        <span className="brand-name">Inkdelta</span>
+      {IS_MAC && <span className="traffic-space" />}
+      <img className="brand-mark" src="/logo.svg" alt="" width={20} height={20} />
+      <span className="brand-name">Inkdelta</span>
+
+      <nav className="menubar" aria-label="Menu">
+        {menus.map(([label, items]) => (
+          <button key={label} className="menu-button" onClick={(e) => openMenuFor(e.currentTarget, items())}>{label}</button>
+        ))}
+        <button className={`menu-button ai-menu${aiReady ? "" : " setup"}`} onClick={(e) => openMenuFor(e.currentTarget, aiMenu())} title="AI assistant for review comments">
+          <Sparkles size={14} /> AI{!aiReady && <small>set up</small>}
+        </button>
+      </nav>
+
+      <span className="crumbs" data-tauri-drag-region>
         {repo && (
-          <span className="crumbs">
+          <>
             <ChevronRight size={14} />
             <span className="crumb">{repo.name}</span>
-            {branch && (
-              <>
-                <ChevronRight size={14} />
-                <span className="crumb muted">{branch}</span>
-              </>
-            )}
-          </span>
+            {branch && <span className="crumb muted">· {branch}</span>}
+          </>
         )}
-      </div>
+      </span>
 
-      <button className="palette-trigger" onClick={() => setPaletteOpen(true)} aria-label="Open command palette">
-        <Command size={14} />
-        <span>{loose ? "Comparing two files" : "Search commands and branches"}</span>
-        <kbd>Ctrl K</kbd>
+      <span className="spacer" data-tauri-drag-region />
+      <button className="icon-button" onClick={() => setPaletteOpen(true)} title="Search every command (Ctrl K)" aria-label="Search commands">
+        <Command size={16} />
       </button>
-
-      <div className="titlebar-right" data-tauri-drag-region>{!IS_MAC && <WindowControls />}</div>
+      {!IS_MAC && <WindowControls />}
     </header>
   );
 }

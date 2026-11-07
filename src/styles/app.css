@@ -227,3 +227,15 @@ kbd {
   .redline { box-shadow: none; margin: 0 auto; max-width: none; }
   .redline .change-number { display: none; }
 }
+
+.zoom-chip { height: 20px; padding: 0 7px; font-size: var(--text-sm); color: var(--text-3); font-variant-numeric: tabular-nums; }
+
+/* ---------- menu bar ---------- */
+.titlebar { gap: 8px; }
+.menubar { display: flex; align-items: center; gap: 2px; margin-left: 10px; }
+.menu-button { height: 28px; padding: 0 11px; background: transparent; border-color: transparent; box-shadow: none; color: var(--text-2); border-radius: 8px; }
+.menu-button:hover:not(:disabled) { background: var(--press); color: var(--text); border-color: transparent; }
+.menu-button.ai-menu { color: var(--accent); font-weight: 560; }
+.menu-button.ai-menu.setup small { margin-left: 4px; padding: 0 6px; border-radius: 8px; background: var(--accent-soft); font-size: 10.5px; }
+.crumbs { margin-left: 10px; }
+.titlebar .icon-button { margin-right: 4px; }

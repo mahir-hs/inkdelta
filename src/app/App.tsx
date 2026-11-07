@@ -8,6 +8,10 @@ import { useGit } from "../store/git";
 import { useReview } from "../store/review";
 import { useUi } from "../store/ui";
 import { useWorkspace } from "../store/workspace";
+import { useZoom } from "../store/zoom";
+import { LayoutDialog } from "../features/layout/LayoutDialog";
+import { AiDialogs } from "../features/ai/AiDialogs";
+import { AppearanceDialog } from "../features/appearance/AppearanceDialog";
 import { ConflictResolver } from "../features/conflicts/ConflictResolver";
 import { DialogHost } from "../ui/DialogHost";
 import { MenuHost } from "../ui/MenuHost";
@@ -74,7 +78,17 @@ export default function App() {
   // ---- keyboard: F3 / Shift+F3 move between changes, Ctrl+K opens the command palette
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "F3") {
+      const mod = (e.ctrlKey || e.metaKey) && !e.altKey;
+      if (mod && (e.key === "=" || e.key === "+")) {
+        e.preventDefault();
+        useZoom.getState().zoomIn();
+      } else if (mod && (e.key === "-" || e.key === "_")) {
+        e.preventDefault();
+        useZoom.getState().zoomOut();
+      } else if (mod && e.key === "0") {
+        e.preventDefault();
+        useZoom.getState().reset();
+      } else if (e.key === "F3") {
         e.preventDefault();
         stepChange(e.shiftKey ? -1 : 1);
       } else if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === "k" || (e.shiftKey && e.key.toLowerCase() === "p"))) {
@@ -82,8 +96,20 @@ export default function App() {
         useUi.getState().setPaletteOpen(true);
       }
     };
+    // Ctrl + scroll wheel zooms too.
+    const onWheel = (e: WheelEvent) => {
+      if (!(e.ctrlKey || e.metaKey)) return;
+      e.preventDefault();
+      if (e.deltaY < 0) useZoom.getState().zoomIn();
+      else if (e.deltaY > 0) useZoom.getState().zoomOut();
+    };
+    useZoom.getState().restore();
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("wheel", onWheel, { passive: false });
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("wheel", onWheel);
+    };
   }, []);
 
   return (
@@ -97,6 +123,9 @@ export default function App() {
       </div>
       <StatusBar />
 
+      <LayoutDialog />
+      <AiDialogs />
+      <AppearanceDialog />
       <ConflictResolver />
       <DialogHost />
       <MenuHost />

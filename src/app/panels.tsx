@@ -7,6 +7,7 @@ import { GraphPanel } from "../features/graph/GraphPanel";
 import { OutputPanel } from "../features/output/OutputPanel";
 import { RedlinePanel } from "../features/redline/RedlinePanel";
 import { ChangesHost, ReviewerHost, WordCommentsHost } from "../features/review/ReviewHosts";
+import { AiPanel } from "../features/ai/AiPanel";
 import { TextDiffPanel } from "../features/textdiff/TextDiffPanel";
 import { SourceControlPanel } from "../features/sourcecontrol/SourceControlPanel";
 
@@ -20,4 +21,5 @@ export const panelComponents: Record<string, FunctionComponent<IDockviewPanelPro
   graph: () => <GraphPanel />,
   output: () => <OutputPanel />,
   textDiff: () => <TextDiffPanel />,
+  ai: () => <AiPanel />,
 };

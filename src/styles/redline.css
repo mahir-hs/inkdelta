@@ -10,7 +10,7 @@
   box-shadow: var(--page-shadow);
   border-radius: 4px;
   font-family: var(--font-doc);
-  font-size: 18px;
+  font-size: var(--doc-size, 18px);
   line-height: 1.72;
   font-optical-sizing: auto;
   hyphens: auto;
@@ -107,7 +107,7 @@
 
 /* Reading is a calm page, with no card and no chrome: just the text. Editing is direct, like a notes app. */
 .doc-scroll:has(.redline.reading) { background: var(--pane); }
-.redline.reading { box-shadow: none; background: transparent; max-width: 720px; padding: 40px 28px 160px; font-size: 19px; line-height: 1.78; }
+.redline.reading { box-shadow: none; background: transparent; max-width: 720px; padding: 40px 28px 160px; font-size: calc(var(--doc-size, 18px) + 1px); line-height: 1.78; }
 .redline.reading h1 { font-size: 2.1em; letter-spacing: -0.02em; margin-top: 0.2em; }
 .redline.reading h2 { font-size: 1.5em; }
 .redline .editable { outline: none; border-radius: 4px; box-decoration-break: clone; -webkit-box-decoration-break: clone; transition: background var(--fast); cursor: text; }

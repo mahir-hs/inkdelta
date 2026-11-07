@@ -66,7 +66,7 @@
 }
 
 /* Light theme, chosen explicitly... */
-:root[data-theme="light"] {
+:root[data-mode="light"] {
   color-scheme: light;
   --window: #e7e9ef;
   --pane: #fbfbfd;
@@ -99,42 +99,4 @@
   --highlight: inset 0 1px 0 rgba(255, 255, 255, 0.9);
   --lane-0: #4352d8; --lane-1: #0c8c68; --lane-2: #a5710a; --lane-3: #c3303d;
   --lane-4: #7a4fc4; --lane-5: #0f86a8; --lane-6: #c2661c; --lane-7: #b33b8a;
-}
-
-/* ...or when the system prefers light and the user has not chosen. Same values as above. */
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) {
-    color-scheme: light;
-    --window: #e7e9ef;
-    --pane: #fbfbfd;
-    --raised: #f1f2f6;
-    --raised-2: #ffffff;
-    --hover: rgba(20, 24, 44, 0.05);
-    --press: rgba(20, 24, 44, 0.085);
-    --scrim: rgba(18, 22, 40, 0.36);
-    --line: rgba(20, 24, 44, 0.09);
-    --line-strong: rgba(20, 24, 44, 0.16);
-    --text: #16181f;
-    --text-2: #4b4f61;
-    --text-3: #7b7f92;
-    --accent: #4352d8;
-    --accent-solid: #4352d8;
-    --accent-gradient: linear-gradient(135deg, #4352d8 0%, #6a47d8 100%);
-    --accent-soft: rgba(67, 82, 216, 0.1);
-    --accent-ring: rgba(67, 82, 216, 0.4);
-    --ins: #0c8c68;
-    --ins-bg: rgba(12, 140, 104, 0.13);
-    --del: #c3303d;
-    --del-bg: rgba(195, 48, 61, 0.11);
-    --mod: #a5710a;
-    --mod-soft: rgba(165, 113, 10, 0.1);
-    --page: #ffffff;
-    --page-text: #191b23;
-    --page-shadow: 0 0 0 1px rgba(20, 24, 44, 0.06), 0 20px 50px rgba(20, 24, 44, 0.12);
-    --shadow-pane: 0 0 0 1px var(--line), 0 6px 20px rgba(20, 24, 44, 0.06);
-    --shadow-pop: 0 0 0 1px var(--line-strong), 0 20px 60px rgba(20, 24, 44, 0.22);
-    --highlight: inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    --lane-0: #4352d8; --lane-1: #0c8c68; --lane-2: #a5710a; --lane-3: #c3303d;
-    --lane-4: #7a4fc4; --lane-5: #0f86a8; --lane-6: #c2661c; --lane-7: #b33b8a;
-  }
 }

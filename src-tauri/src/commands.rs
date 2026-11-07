@@ -71,6 +71,12 @@ pub async fn save_document_edits(repo: String, path: String, edits: Vec<Paragrap
     .await
 }
 
+/// Ask an AI service or tool. The UI shows the user what is sent and gets confirmation first.
+#[tauri::command]
+pub async fn ai_complete(config: crate::ai::AiConfig, system: String, user: String) -> AppResult<String> {
+    blocking(move || crate::ai::complete(&config, &system, &user)).await
+}
+
 // ============================================================ review progress and export
 
 #[tauri::command]

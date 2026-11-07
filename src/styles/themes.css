@@ -1,0 +1,79 @@
+/* Themes, accent colours and document typography.
+   tokens.css holds the defaults (Graphite, dark; Paper, light). Each block below only changes what differs.
+   <html> carries data-theme, data-mode (dark|light), data-accent, data-doc-font, data-doc-size. */
+
+/* ---------- dark themes ---------- */
+
+:root[data-theme="midnight"] {
+  --window: #070914; --pane: #0d1020; --raised: #151a30; --raised-2: #1c2240;
+  --line: rgba(140, 160, 255, 0.10); --line-strong: rgba(140, 160, 255, 0.19);
+  --text: #e8ecff; --text-2: #9aa3c8; --text-3: #646d94;
+  --page: #0f1326; --page-text: #e9ecfb;
+}
+:root[data-theme="nord"] {
+  --window: #232831; --pane: #2b303b; --raised: #333a47; --raised-2: #3b4351;
+  --line: rgba(216, 222, 233, 0.09); --line-strong: rgba(216, 222, 233, 0.17);
+  --text: #e5e9f0; --text-2: #aab3c3; --text-3: #7b8599;
+  --page: #2e3440; --page-text: #eceff4;
+}
+:root[data-theme="forest"] {
+  --window: #0b100d; --pane: #121915; --raised: #19221d; --raised-2: #212c26;
+  --line: rgba(190, 230, 200, 0.08); --line-strong: rgba(190, 230, 200, 0.16);
+  --text: #e6efe8; --text-2: #a0b2a6; --text-3: #6b7f72;
+  --page: #151d18; --page-text: #e9f0ea;
+}
+:root[data-theme="dusk"] {
+  --window: #0f0b14; --pane: #171120; --raised: #1f1829; --raised-2: #281f34;
+  --line: rgba(220, 190, 255, 0.09); --line-strong: rgba(220, 190, 255, 0.17);
+  --text: #efe9f5; --text-2: #b0a3c0; --text-3: #7a6c8c;
+  --page: #1a1424; --page-text: #f0eaf6;
+}
+
+/* ---------- light themes (colours for light mode come from tokens.css) ---------- */
+
+:root[data-theme="sepia"] {
+  --window: #e9dfcf; --pane: #f6efe2; --raised: #efe5d3; --raised-2: #fbf6ea;
+  --hover: rgba(80, 55, 20, 0.06); --press: rgba(80, 55, 20, 0.10);
+  --line: rgba(80, 55, 20, 0.12); --line-strong: rgba(80, 55, 20, 0.21);
+  --text: #3b2f22; --text-2: #6a5a47; --text-3: #94836d;
+  --page: #fbf5e8; --page-text: #33291d;
+}
+:root[data-theme="mist"] {
+  --window: #dfe6ee; --pane: #f3f6fa; --raised: #e8eef5; --raised-2: #ffffff;
+  --line: rgba(20, 40, 70, 0.10); --line-strong: rgba(20, 40, 70, 0.18);
+  --text: #14202e; --text-2: #475a70; --text-3: #7388a0;
+  --page: #ffffff; --page-text: #15202c;
+}
+
+/* ---------- accent colours: two mid-tone stops; everything else is derived ---------- */
+
+:root[data-accent="blue"]    { --accent-base: #2d7ff0; --accent-base-2: #20b1e6; }
+:root[data-accent="teal"]    { --accent-base: #0e9f8e; --accent-base-2: #16b3d8; }
+:root[data-accent="green"]   { --accent-base: #2f9e5f; --accent-base-2: #6fae2c; }
+:root[data-accent="orange"]  { --accent-base: #e0622c; --accent-base-2: #e0902c; }
+:root[data-accent="rose"]    { --accent-base: #e0457b; --accent-base-2: #c04bd6; }
+:root[data-accent="violet"]  { --accent-base: #8b5cf6; --accent-base-2: #c25bd6; }
+:root[data-accent="crimson"] { --accent-base: #d6403f; --accent-base-2: #e07a2c; }
+
+:root[data-accent="blue"], :root[data-accent="teal"], :root[data-accent="green"], :root[data-accent="orange"],
+:root[data-accent="rose"], :root[data-accent="violet"], :root[data-accent="crimson"] {
+  --accent: color-mix(in srgb, var(--accent-base) 62%, white);
+  --accent-solid: var(--accent-base);
+  --accent-gradient: linear-gradient(135deg, var(--accent-base) 0%, var(--accent-base-2) 100%);
+  --accent-soft: color-mix(in srgb, var(--accent-base) 16%, transparent);
+  --accent-ring: color-mix(in srgb, var(--accent-base) 46%, transparent);
+  --on-accent: #ffffff;
+}
+/* on light surfaces the accent text must be the darker base colour */
+:root[data-mode="light"][data-accent="blue"], :root[data-mode="light"][data-accent="teal"], :root[data-mode="light"][data-accent="green"],
+:root[data-mode="light"][data-accent="orange"], :root[data-mode="light"][data-accent="rose"], :root[data-mode="light"][data-accent="violet"],
+:root[data-mode="light"][data-accent="crimson"] { --accent: var(--accent-base); }
+
+/* ---------- how the document is set ---------- */
+
+:root { --doc-size: 18px; }
+:root[data-doc-size="s"] { --doc-size: 16px; }
+:root[data-doc-size="l"] { --doc-size: 20px; }
+:root[data-doc-size="xl"] { --doc-size: 22px; }
+:root[data-doc-font="sans"] { --font-doc: var(--font-ui); }
+:root[data-doc-font="classic"] { --font-doc: Georgia, "Times New Roman", "Noto Serif", serif; }

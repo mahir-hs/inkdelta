@@ -1,7 +1,7 @@
 // The narrow icon strip on the far left. Click an icon to bring that panel forward
 // (it re-opens the panel if you closed it).
 
-import { FileText, GitBranch, History, ListChecks, MessageSquare, ScrollText, Settings2, Rows3 } from "lucide-react";
+import { Sparkles, FileText, GitBranch, History, ListChecks, MessageSquare, ScrollText, Settings2, Rows3 } from "lucide-react";
 import type { ComponentType } from "react";
 import { useGit } from "../store/git";
 import { useUi } from "../store/ui";
@@ -18,6 +18,7 @@ const TOP: Item[] = [
   { id: "sourceControl", label: "Source control", Icon: GitBranch },
   { id: "graph", label: "History", Icon: History },
   { id: "reviewer", label: "Reviewer comments", Icon: ListChecks },
+  { id: "ai", label: "AI assistant", Icon: Sparkles },
   { id: "changes", label: "Changes", Icon: Rows3 },
   { id: "wordComments", label: "Word comments", Icon: MessageSquare },
   { id: "output", label: "Output", Icon: ScrollText },
@@ -26,9 +27,8 @@ const TOP: Item[] = [
 export function ActivityBar() {
   const visibleIds = useLayout((s) => s.visibleIds);
   const changedFiles = useGit((s) => s.status?.files.length ?? 0);
-  const theme = useUi((s) => s.theme);
   const openMenuBelow = useUi((s) => s.openMenuBelow);
-  const setTheme = useUi((s) => s.setTheme);
+  const setAppearanceOpen = useUi((s) => s.setAppearanceOpen);
 
   return (
     <nav className="activity-bar" aria-label="Panels">
@@ -52,9 +52,7 @@ export function ActivityBar() {
         aria-label="Appearance and layout"
         onClick={(e) =>
           openMenuBelow(e.currentTarget, [
-            { label: `${theme === "system" ? "✓ " : "   "}Match system theme`, onSelect: () => setTheme("system") },
-            { label: `${theme === "dark" ? "✓ " : "   "}Dark`, onSelect: () => setTheme("dark") },
-            { label: `${theme === "light" ? "✓ " : "   "}Light`, onSelect: () => setTheme("light") },
+            { label: "Appearance…", hint: "themes, colours, text", onSelect: () => setAppearanceOpen(true) },
             { label: "Reset panel layout", separator: true, onSelect: () => resetLayout() },
           ])
         }

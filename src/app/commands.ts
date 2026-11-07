@@ -4,9 +4,11 @@
 import { exportRedline } from "../features/redline/exportRedline";
 import { addRemotePrompt, createTagPrompt, identityPrompt, newBranchPrompt, stashPrompt } from "../features/sourcecontrol/prompts";
 import { useConflicts } from "../store/conflicts";
+import { useAi } from "../store/ai";
 import { useGit } from "../store/git";
-import { useUi } from "../store/ui";
+import { THEMES, useUi } from "../store/ui";
 import { useWorkspace } from "../store/workspace";
+import { useZoom } from "../store/zoom";
 import { PANEL_TITLES, resetLayout, showPanel, type PanelId } from "./layout";
 
 export interface Command {
@@ -72,9 +74,13 @@ export function getCommands(): Command[] {
   );
   commands.push(
     { id: "reset-layout", title: "Reset panel layout", group: "View", run: () => resetLayout() },
-    { id: "theme-dark", title: "Dark theme", group: "View", run: () => ui.setTheme("dark") },
-    { id: "theme-light", title: "Light theme", group: "View", run: () => ui.setTheme("light") },
-    { id: "theme-system", title: "Match system theme", group: "View", run: () => ui.setTheme("system") },
+    { id: "ai-settings", title: "AI assistant: choose a service…", group: "View", run: () => useAi.getState().openSettings(true) },
+    { id: "zoom-in", title: "Zoom in", group: "View", run: () => useZoom.getState().zoomIn() },
+    { id: "zoom-out", title: "Zoom out", group: "View", run: () => useZoom.getState().zoomOut() },
+    { id: "zoom-reset", title: "Reset zoom to 100%", group: "View", run: () => useZoom.getState().reset() },
+    { id: "appearance", title: "Appearance: themes, colours and text…", group: "View", run: () => ui.setAppearanceOpen(true) },
+    { id: "theme-system", title: "Theme: match the system", group: "View", run: () => ui.setAppearance({ theme: "system" }) },
+    ...THEMES.map((t) => ({ id: `theme-${t.id}`, title: `Theme: ${t.label}`, group: "View", run: () => ui.setAppearance({ theme: t.id }) })),
   );
 
   return commands.filter((c) => !c.available || c.available());

@@ -6,7 +6,7 @@
 import type { DockviewApi, DockviewTheme } from "dockview-react";
 import { create } from "zustand";
 
-export type PanelId = "redline" | "documents" | "sourceControl" | "reviewer" | "changes" | "wordComments" | "graph" | "output" | "textDiff";
+export type PanelId = "redline" | "documents" | "sourceControl" | "reviewer" | "changes" | "wordComments" | "graph" | "output" | "textDiff" | "ai";
 
 export const PANEL_TITLES: Record<PanelId, string> = {
   redline: "Redline",
@@ -18,9 +18,10 @@ export const PANEL_TITLES: Record<PanelId, string> = {
   graph: "History",
   output: "Output",
   textDiff: "Diff",
+  ai: "AI assistant",
 };
 
-const LAYOUT_KEY = "inkdelta.layout.v3";
+const LAYOUT_KEY = "inkdelta.layout.v4";
 
 /** Panels float as separate rounded cards with a gap between them; the look is in styles/dock.css. */
 export const DOCK_THEME: DockviewTheme = {
@@ -33,12 +34,31 @@ export const DOCK_THEME: DockviewTheme = {
   tabAnimation: "smooth",
 };
 
+/** Where each panel opens. The user chooses these in "Customize layout". */
+export type Side = "left" | "right" | "bottom" | "off";
+export const DEFAULT_SIDES: Record<PanelId, Side> = {
+  redline: "off", textDiff: "off", documents: "left", sourceControl: "left",
+  reviewer: "right", changes: "right", wordComments: "right", ai: "right", graph: "bottom", output: "bottom",
+};
+const SIDES_KEY = "inkdelta.sides";
+
+function readSides(): Record<PanelId, Side> {
+  try {
+    return { ...DEFAULT_SIDES, ...JSON.parse(localStorage.getItem(SIDES_KEY) ?? "{}") };
+  } catch {
+    return DEFAULT_SIDES;
+  }
+}
+
 /** The dock API and which panel the user is looking at, shared with the activity bar and palette. */
 interface LayoutStore {
   api: DockviewApi | null;
   activeId: string | null;
   /** Panels currently showing (the front tab of each group). */
   visibleIds: string[];
+  sides: Record<PanelId, Side>;
+  customizeOpen: boolean;
+  setCustomizeOpen: (open: boolean) => void;
   setApi: (api: DockviewApi) => void;
   setActive: (id: string | null) => void;
   refreshVisible: () => void;
@@ -48,6 +68,9 @@ export const useLayout = create<LayoutStore>((set) => ({
   api: null,
   activeId: null,
   visibleIds: [],
+  sides: readSides(),
+  customizeOpen: false,
+  setCustomizeOpen: (customizeOpen) => set({ customizeOpen }),
   setApi: (api) => set({ api }),
   refreshVisible: () =>
     set((s) => ({ visibleIds: s.api ? s.api.groups.map((g) => g.activePanel?.id).filter((id): id is string => !!id) : [] })),
@@ -58,23 +81,11 @@ function add(api: DockviewApi, id: PanelId, options: Record<string, unknown> = {
   return api.addPanel({ id, component: id, title: PANEL_TITLES[id], ...options } as never);
 }
 
-/** Documents + source control on the left, the redline in the middle, review on the right, history below. */
+/** Focus layout: just the page. Documents, Git, review and history open from the activity bar. */
 export function buildDefaultLayout(api: DockviewApi) {
   api.clear();
   add(api, "redline");
   add(api, "textDiff", { position: { referencePanel: "redline", direction: "within" } });
-  add(api, "documents", { position: { referencePanel: "redline", direction: "left" }, initialWidth: 290 });
-  add(api, "sourceControl", { position: { referencePanel: "documents", direction: "within" } });
-  add(api, "reviewer", { position: { referencePanel: "redline", direction: "right" }, initialWidth: 360 });
-  add(api, "changes", { position: { referencePanel: "reviewer", direction: "within" } });
-  add(api, "wordComments", { position: { referencePanel: "reviewer", direction: "within" } });
-  add(api, "graph", { position: { direction: "below" }, initialHeight: 250 });
-  add(api, "output", { position: { referencePanel: "graph", direction: "within" } });
-
-  // Each tab group shows its first panel.
-  api.getPanel("documents")?.api.setActive();
-  api.getPanel("reviewer")?.api.setActive();
-  api.getPanel("graph")?.api.setActive();
   api.getPanel("redline")?.api.setActive();
 }
 
@@ -111,30 +122,38 @@ export function togglePanel(id: PanelId) {
   else showPanel(id);
 }
 
-/** Bring a panel to the front, re-opening it if the user had closed it. */
+/** Bring a panel to the front, opening it on the side the user chose if it is closed. */
 export function showPanel(id: PanelId) {
-  const api = useLayout.getState().api;
+  const { api, sides } = useLayout.getState();
   if (!api) return;
   const existing = api.getPanel(id);
   if (existing) {
     existing.api.setActive();
     return;
   }
-  const near: Record<PanelId, { referencePanel?: string; direction: string }> = {
-    redline: { direction: "right" },
-    documents: { referencePanel: "redline", direction: "left" },
-    sourceControl: { referencePanel: "redline", direction: "left" },
-    reviewer: { referencePanel: "redline", direction: "right" },
-    changes: { referencePanel: "redline", direction: "right" },
-    wordComments: { referencePanel: "redline", direction: "right" },
-    graph: { direction: "below" },
-    output: { direction: "below" },
-    textDiff: { referencePanel: "redline", direction: "within" },
-  };
-  const target = near[id];
-  const position = target.referencePanel && api.getPanel(target.referencePanel)
-    ? { referencePanel: target.referencePanel, direction: target.direction }
-    : { direction: target.direction };
-  add(api, id, { position });
+  if (id === "redline") return void add(api, id);
+  if (id === "textDiff") return void add(api, id, { position: { referencePanel: "redline", direction: "within" } });
+
+  const sideOf = (panel: PanelId): Exclude<Side, "off"> => (sides[panel] === "off" ? (DEFAULT_SIDES[panel] as Exclude<Side, "off">) : (sides[panel] as Exclude<Side, "off">));
+  const side = sideOf(id);
+  const sibling = (Object.keys(PANEL_TITLES) as PanelId[]).find((other) => other !== id && other !== "redline" && other !== "textDiff" && sideOf(other) === side && api.getPanel(other));
+  let position: Record<string, unknown>;
+  if (sibling) position = { referencePanel: sibling, direction: "within" };
+  else if (side === "bottom") position = { direction: "below" };
+  else position = api.getPanel("redline") ? { referencePanel: "redline", direction: side } : { direction: side };
+  const size = side === "bottom" ? { initialHeight: 250 } : { initialWidth: side === "left" ? 290 : 360 };
+  add(api, id, { position, ...size });
   api.getPanel(id)?.api.setActive();
+}
+
+/** Move a panel to another side (or hide it). Takes effect immediately and is remembered. */
+export function setPanelSide(id: PanelId, side: Side) {
+  const { api, sides } = useLayout.getState();
+  const next = { ...sides, [id]: side };
+  try { localStorage.setItem(SIDES_KEY, JSON.stringify(next)); } catch { /* ignore */ }
+  useLayout.setState({ sides: next });
+  if (!api) return;
+  const panel = api.getPanel(id);
+  if (panel) api.removePanel(panel);
+  if (side !== "off") showPanel(id);
 }
