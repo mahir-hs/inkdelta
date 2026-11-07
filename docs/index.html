@@ -54,41 +54,6 @@
   </div>
 </section>
 
-<!-- ============ download ============ -->
-<section class="dl dl-slab" id="download">
-  <h2 class="sr-only">Download Inkdelta</h2>
-  <div class="wrap dl-center">
-    <div class="dl-hero">
-      <div class="dl-icon" id="dl-main-icon" aria-hidden="true">
-        <svg class="ic-none"><use href="#i-down"/></svg><svg class="ic-win"><use href="#i-os-win"/></svg><svg class="ic-mac"><use href="#i-os-mac"/></svg><svg class="ic-linux"><use href="#i-os-linux"/></svg>
-      </div>
-      <p class="dl-title">Inkdelta <span class="dl-version"></span></p>
-      <a class="btn primary dl-big" data-main-download href="#download"><svg aria-hidden="true"><use href="#i-down"/></svg><span class="dl-label">Download</span></a>
-      <p class="dl-sub"><span id="dl-main-sub"></span></p>
-    </div>
-    <div class="dl-grid">
-      <article class="dl-card" data-os="windows">
-        <div class="dl-card-head"><svg class="dl-os" aria-hidden="true"><use href="#i-os-win"/></svg><h3>Windows</h3><span class="dl-tag">For your computer</span></div>
-        <a class="dl-btn" data-file="win-exe" aria-disabled="true" href="#download"><svg aria-hidden="true"><use href="#i-down"/></svg><span class="dl-name">Installer <em>.exe</em></span><span class="dl-size"></span></a>
-        <a class="dl-btn" data-file="win-msi" aria-disabled="true" href="#download"><svg aria-hidden="true"><use href="#i-down"/></svg><span class="dl-name">MSI package <em>.msi</em></span><span class="dl-size"></span></a>
-      </article>
-      <article class="dl-card" data-os="macos">
-        <div class="dl-card-head"><svg class="dl-os" aria-hidden="true"><use href="#i-os-mac"/></svg><h3>macOS</h3><span class="dl-tag">For your computer</span></div>
-        <a class="dl-btn" data-file="mac-arm" aria-disabled="true" href="#download"><svg aria-hidden="true"><use href="#i-down"/></svg><span class="dl-name">Apple Silicon <em>.dmg</em></span><span class="dl-size"></span></a>
-        <a class="dl-btn" data-file="mac-x64" aria-disabled="true" href="#download"><svg aria-hidden="true"><use href="#i-down"/></svg><span class="dl-name">Intel <em>.dmg</em></span><span class="dl-size"></span></a>
-      </article>
-      <article class="dl-card" data-os="linux">
-        <div class="dl-card-head"><svg class="dl-os" aria-hidden="true"><use href="#i-os-linux"/></svg><h3>Linux</h3><span class="dl-tag">For your computer</span></div>
-        <a class="dl-btn" data-file="lin-appimage" aria-disabled="true" href="#download"><svg aria-hidden="true"><use href="#i-down"/></svg><span class="dl-name">Any distribution <em>.AppImage</em></span><span class="dl-size"></span></a>
-        <a class="dl-btn" data-file="lin-deb" aria-disabled="true" href="#download"><svg aria-hidden="true"><use href="#i-down"/></svg><span class="dl-name">Debian, Ubuntu <em>.deb</em></span><span class="dl-size"></span></a>
-        <a class="dl-btn" data-file="lin-rpm" aria-disabled="true" href="#download"><svg aria-hidden="true"><use href="#i-down"/></svg><span class="dl-name">Fedora <em>.rpm</em></span><span class="dl-size"></span></a>
-      </article>
-    </div>
-    <p class="dl-state" id="dl-state">Looking for the latest version…</p>
-    <p class="dl-note">Windows is the tested one; macOS and Linux have not been tried yet. Not code-signed: if Windows warns, choose More info, then Run anyway. Inkdelta then updates itself, and asks first.</p>
-  </div>
-</section>
-
 <div class="object" id="object">
   <img src="assets/shots/redline.webp" width="3000" height="1880" decoding="async" alt="Inkdelta showing a word-level redline of a paper, the list of its versions, and a reviewer's comments">
 </div>
@@ -266,6 +231,46 @@
         </div></div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ============ download ============ -->
+<section class="scene dl" id="download">
+  <div class="scene-head"><h2>Download</h2></div>
+  <div class="wrap dl-center">
+    <div class="dl-hero">
+      <div class="dl-icon" id="dl-main-icon" aria-hidden="true">
+        <svg class="ic-none"><use href="#i-down"/></svg><svg class="ic-win"><use href="#i-os-win"/></svg><svg class="ic-mac"><use href="#i-os-mac"/></svg><svg class="ic-linux"><use href="#i-os-linux"/></svg>
+      </div>
+      <p class="dl-title">Inkdelta <span class="dl-version"></span></p>
+      <a class="btn primary dl-big" data-main-download href="#download"><svg aria-hidden="true"><use href="#i-down"/></svg><span class="dl-label">Download</span></a>
+      <p class="dl-sub"><span id="dl-main-sub"></span></p>
+    </div>
+    <div class="dl-grid">
+      <article class="dl-card" data-os="windows">
+        <div class="dl-card-head"><svg class="dl-os" aria-hidden="true"><use href="#i-os-win"/></svg><h3>Windows</h3><span class="dl-tag">For your computer</span></div>
+        <a class="dl-btn" data-file="win-exe" aria-disabled="true" href="#download"><svg aria-hidden="true"><use href="#i-down"/></svg><span class="dl-name">Installer <em>.exe</em></span><span class="dl-size"></span></a>
+        <a class="dl-btn" data-file="win-msi" aria-disabled="true" href="#download"><svg aria-hidden="true"><use href="#i-down"/></svg><span class="dl-name">MSI package <em>.msi</em></span><span class="dl-size"></span></a>
+      </article>
+      <article class="dl-card" data-os="macos">
+        <div class="dl-card-head"><svg class="dl-os" aria-hidden="true"><use href="#i-os-mac"/></svg><h3>macOS</h3><span class="dl-tag">For your computer</span></div>
+        <a class="dl-btn" data-file="mac-arm" aria-disabled="true" href="#download"><svg aria-hidden="true"><use href="#i-down"/></svg><span class="dl-name">Apple Silicon <em>.dmg</em></span><span class="dl-size"></span></a>
+        <a class="dl-btn" data-file="mac-x64" aria-disabled="true" href="#download"><svg aria-hidden="true"><use href="#i-down"/></svg><span class="dl-name">Intel <em>.dmg</em></span><span class="dl-size"></span></a>
+      </article>
+      <article class="dl-card" data-os="linux">
+        <div class="dl-card-head"><svg class="dl-os" aria-hidden="true"><use href="#i-os-linux"/></svg><h3>Linux</h3><span class="dl-tag">For your computer</span></div>
+        <a class="dl-btn" data-file="lin-appimage" aria-disabled="true" href="#download"><svg aria-hidden="true"><use href="#i-down"/></svg><span class="dl-name">Any distribution <em>.AppImage</em></span><span class="dl-size"></span></a>
+        <a class="dl-btn" data-file="lin-deb" aria-disabled="true" href="#download"><svg aria-hidden="true"><use href="#i-down"/></svg><span class="dl-name">Debian, Ubuntu <em>.deb</em></span><span class="dl-size"></span></a>
+        <a class="dl-btn" data-file="lin-rpm" aria-disabled="true" href="#download"><svg aria-hidden="true"><use href="#i-down"/></svg><span class="dl-name">Fedora <em>.rpm</em></span><span class="dl-size"></span></a>
+      </article>
+    </div>
+    <p class="dl-state" id="dl-state">Looking for the latest version…</p>
+    <p class="dl-note">Windows is the tested one; macOS and Linux have not been tried yet. Not code-signed: if Windows warns, choose More info, then Run anyway. Inkdelta then updates itself, and asks first.</p>
+    <pre class="code" tabindex="0"><span># or build it yourself: Node 22, pnpm and Rust</span>
+git clone https://github.com/mahir-hs/inkdelta.git
+cd inkdelta
+pnpm install
+pnpm app</pre>
   </div>
 </section>
 
