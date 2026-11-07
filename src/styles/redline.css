@@ -1,0 +1,116 @@
+/* The document itself, set like a manuscript page.
+   Also embedded into exported HTML, so it must not depend on app.css. */
+
+.redline {
+  max-width: 760px;
+  margin: 32px auto 120px;
+  padding: 64px 76px 80px;
+  background: var(--page);
+  color: var(--page-text);
+  box-shadow: var(--page-shadow);
+  border-radius: 4px;
+  font-family: var(--font-doc);
+  font-size: 18px;
+  line-height: 1.72;
+  font-optical-sizing: auto;
+  hyphens: auto;
+  text-wrap: pretty;
+}
+
+.redline p,
+.redline h1, .redline h2, .redline h3, .redline h4, .redline h5, .redline h6 {
+  position: relative;
+  margin: 0 0 0.85em;
+  padding-left: 16px;
+  margin-left: -16px;
+  border-left: 3px solid transparent;
+  border-radius: 1px;
+}
+.redline h1, .redline h2, .redline h3, .redline h4, .redline h5, .redline h6 {
+  font-weight: 620;
+  line-height: 1.25;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+.redline h1 { font-size: 1.85em; margin-top: 0.4em; }
+.redline h2 { font-size: 1.4em; margin-top: 1.3em; }
+.redline h3, .redline h4, .redline h5, .redline h6 { font-size: 1.12em; margin-top: 1.1em; }
+.redline .empty { min-height: 0.5em; margin-bottom: 0.2em; }
+
+/* a coloured bar in the margin marks every changed paragraph */
+.redline .kind-inserted { border-left-color: var(--ins); }
+.redline .kind-deleted  { border-left-color: var(--del); }
+.redline .kind-modified { border-left-color: var(--mod); }
+.redline .selected { background: var(--mod-soft); }
+.redline [data-change] { cursor: pointer; }
+
+.redline .change-number {
+  position: absolute;
+  left: -52px;
+  top: 4px;
+  width: 30px;
+  text-align: right;
+  font: 500 11px/1.6 var(--font-ui);
+  color: var(--text-3);
+  user-select: none;
+}
+.redline .selected .change-number { color: var(--mod); }
+
+.redline .list-marker { display: inline-block; min-width: 1.7em; margin-right: 0.25em; color: var(--text-3); }
+.redline .indent-1 { margin-left: 1.5em; } .redline .indent-2 { margin-left: 3em; }
+.redline .indent-3 { margin-left: 4.5em; } .redline .indent-4 { margin-left: 6em; }
+
+/* the redline marks: tinted background plus a line, so they survive colour-blindness and print */
+.redline .op-inserted {
+  background: var(--ins-bg);
+  text-decoration: underline;
+  text-decoration-color: var(--ins);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+  border-radius: 2px;
+}
+.redline .op-deleted {
+  background: var(--del-bg);
+  color: color-mix(in srgb, var(--page-text) 72%, var(--del));
+  text-decoration: line-through;
+  text-decoration-color: var(--del);
+  text-decoration-thickness: 1.5px;
+  border-radius: 2px;
+}
+.redline img.op-inserted { outline: 3px solid var(--ins); background: none; }
+.redline img.op-deleted  { outline: 3px solid var(--del); background: none; opacity: 0.65; }
+
+.redline .bold { font-weight: 700; }
+.redline .italic { font-style: italic; }
+.redline .underline:not(.op-inserted):not(.op-deleted) { text-decoration: underline; }
+.redline .sup { vertical-align: super; font-size: 0.72em; line-height: 0; }
+.redline .sub { vertical-align: sub; font-size: 0.72em; line-height: 0; }
+.redline .math { font-family: "Cambria Math", "STIX Two Math", var(--font-doc); font-style: italic; padding: 0 2px; }
+.redline img { max-width: 100%; height: auto; display: block; margin: 0.8em auto; border-radius: 2px; }
+
+.redline .table-wrap { overflow-x: auto; margin: 0.4em 0 1.3em; }
+.redline .doc-table { border-collapse: collapse; width: 100%; margin: 0; font-size: 0.9em; line-height: 1.45; }
+.redline .doc-table td { border: 1px solid var(--line-strong); padding: 7px 11px; vertical-align: top; }
+.redline .doc-table td p { margin: 0; padding-left: 0; margin-left: 0; border-left: 0; }
+
+.redline .notice { color: var(--text-3); font-family: var(--font-ui); font-size: 14px; border: 0; }
+
+/* Reading mode: the newer version as a clean document, with every change mark hidden. */
+.redline.reading .op-inserted { background: none; text-decoration: none; border-radius: 0; }
+.redline.reading .op-deleted, .redline.reading .kind-deleted, .redline.reading img.op-deleted { display: none; }
+.redline.reading img.op-inserted { outline: none; }
+.redline.reading p, .redline.reading h1, .redline.reading h2, .redline.reading h3,
+.redline.reading h4, .redline.reading h5, .redline.reading h6 { border-left-color: transparent; }
+.redline.reading .change-number { display: none; }
+.redline.reading [data-change] { cursor: text; }
+.redline.reading .selected { background: none; }
+
+/* Reading is a calm page, with no card and no chrome: just the text. Editing is direct, like a notes app. */
+.doc-scroll:has(.redline.reading) { background: var(--pane); }
+.redline.reading { box-shadow: none; background: transparent; max-width: 720px; padding: 40px 28px 160px; font-size: 19px; line-height: 1.78; }
+.redline.reading h1 { font-size: 2.1em; letter-spacing: -0.02em; margin-top: 0.2em; }
+.redline.reading h2 { font-size: 1.5em; }
+.redline .editable { outline: none; border-radius: 4px; box-decoration-break: clone; -webkit-box-decoration-break: clone; transition: background var(--fast); cursor: text; }
+.redline .editable:hover { background: var(--hover); }
+.redline .editable:focus { background: var(--accent-soft); box-shadow: 0 0 0 4px var(--accent-soft); }
+.redline .editable.edited { background: var(--mod-soft); box-shadow: 0 0 0 4px var(--mod-soft); }

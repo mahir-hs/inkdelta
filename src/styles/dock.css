@@ -1,0 +1,78 @@
+/* Dockview theme: every panel is a rounded card floating on the window, with a gap between cards.
+   The borders you drag live in the gaps and light up on hover. */
+
+.dockview-theme-inkdelta {
+  --dv-paneview-active-outline-color: var(--accent);
+  --dv-tabs-and-actions-container-font-size: 13px;
+  --dv-tabs-and-actions-container-height: 42px;
+  --dv-drag-over-background-color: var(--accent-soft);
+  --dv-drag-over-border-color: var(--accent);
+  --dv-drag-over-border: 2px solid var(--accent);
+  --dv-edge-dock-indicator-color: var(--accent);
+  --dv-tabs-container-scrollbar-color: var(--line-strong);
+  --dv-icon-hover-background-color: var(--press);
+  --dv-floating-box-shadow: var(--shadow-pop);
+  --dv-floating-border: none;
+  --dv-overlay-z-index: 999;
+  --dv-tab-font-size: inherit;
+  --dv-border-radius: 12px;
+  --dv-tab-margin: 0;
+  --dv-sash-color: transparent;
+  --dv-active-sash-color: var(--accent);
+  --dv-active-sash-transition-duration: 0.12s;
+  --dv-active-sash-transition-delay: 0.08s;
+
+  --dv-group-view-background-color: var(--pane);
+  --dv-tabs-and-actions-container-background-color: transparent;
+  --dv-activegroup-visiblepanel-tab-background-color: transparent;
+  --dv-activegroup-hiddenpanel-tab-background-color: transparent;
+  --dv-inactivegroup-visiblepanel-tab-background-color: transparent;
+  --dv-inactivegroup-hiddenpanel-tab-background-color: transparent;
+  --dv-tab-divider-color: transparent;
+  --dv-activegroup-visiblepanel-tab-color: var(--text);
+  --dv-activegroup-hiddenpanel-tab-color: var(--text-3);
+  --dv-inactivegroup-visiblepanel-tab-color: var(--text-2);
+  --dv-inactivegroup-hiddenpanel-tab-color: var(--text-3);
+  --dv-separator-border: transparent;
+  --dv-paneview-header-border-color: var(--line);
+  --dv-scrollbar-background-color: var(--line-strong);
+  --dv-floating-titlebar-height: 30px;
+  --dv-context-menu-background-color: var(--raised-2);
+  --dv-context-menu-color: var(--text);
+  font-family: var(--font-ui);
+}
+
+/* each group is a card */
+.dockview-theme-inkdelta .dv-groupview {
+  background: var(--pane);
+  border-radius: var(--radius-pane);
+  overflow: hidden;
+  box-shadow: var(--shadow-pane), var(--highlight);
+}
+.dockview-theme-inkdelta .dv-split-view-container .dv-view { overflow: visible; }
+
+/* the borders you drag */
+.dockview-theme-inkdelta .dv-sash { transition: background 0.14s var(--ease); border-radius: 4px; }
+.dockview-theme-inkdelta .dv-sash:hover { background: color-mix(in srgb, var(--accent) 55%, transparent); }
+
+/* tab strip: quiet text tabs, the active one gets a gradient underline */
+.dockview-theme-inkdelta .dv-tabs-and-actions-container { border-bottom: 1px solid var(--line); padding: 0 6px; }
+.dockview-theme-inkdelta .dv-tab {
+  position: relative; padding: 0 12px; margin: 0 1px; border-radius: 8px; font-weight: 480; letter-spacing: -0.005em;
+  transition: color var(--fast), background var(--fast);
+}
+.dockview-theme-inkdelta .dv-tab:hover { background: var(--hover); color: var(--text); }
+.dockview-theme-inkdelta .dv-tab.dv-active-tab { font-weight: 560; }
+.dockview-theme-inkdelta .dv-tab.dv-active-tab::after {
+  content: ""; position: absolute; left: 12px; right: 12px; bottom: -1px; height: 2px; border-radius: 2px; background: var(--accent-gradient);
+}
+.dockview-theme-inkdelta .dv-default-tab-action { opacity: 0; transition: opacity var(--fast); }
+.dockview-theme-inkdelta .dv-tab:hover .dv-default-tab-action,
+.dockview-theme-inkdelta .dv-tab.dv-active-tab .dv-default-tab-action { opacity: 0.7; }
+.dockview-theme-inkdelta .dv-default-tab-action:hover { opacity: 1; }
+
+/* the "where will it land" highlight while dragging a tab */
+.dockview-theme-inkdelta .dv-drop-target-dropzone,
+.dockview-theme-inkdelta .dv-drop-target-anchor {
+  background: var(--accent-soft); border: 2px solid var(--accent-ring); border-radius: 10px;
+}

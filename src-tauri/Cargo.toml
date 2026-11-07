@@ -1,0 +1,30 @@
+[package]
+name = "inkdelta"
+version = "0.1.0"
+description = "Version-aware redlines for Word documents"
+edition = "2021"
+
+[lib]
+name = "inkdelta_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+base64 = "0.23.1"
+git2 = { version = "0.21.0", default-features = false, features = ["vendored-libgit2"] }
+quick-xml = "0.42.0"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+sha2 = "0.11.1"
+similar = "3.2.1"
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+zip = "9.4.1"
+
+[profile.release]
+lto = true
+opt-level = "s"
+codegen-units = 1
+strip = true
