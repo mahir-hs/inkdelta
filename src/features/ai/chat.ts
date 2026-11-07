@@ -132,7 +132,8 @@ const MAX_TURNS = 8;
 const MAX_REPLY_CHARS = 2000;
 
 /** The exact text sent. The tool is called once per message, so earlier turns are repeated here. */
-export function buildChatPrompt(history: ChatTurn[], context: ChatContext, question: string): { system: string; user: string } {
+/** `allowEdits` adds the format instructions (about 300 tokens) so the AI can propose document changes; without it the AI just chats. */
+export function buildChatPrompt(history: ChatTurn[], context: ChatContext, question: string, allowEdits: boolean): { system: string; user: string } {
   const parts: string[] = [];
   if (history.length > 0) {
     const recent = history.slice(-MAX_TURNS * 2);
@@ -144,8 +145,16 @@ export function buildChatPrompt(history: ChatTurn[], context: ChatContext, quest
     parts.push(`PARAGRAPHS FROM THE DOCUMENT (${context.label}):\n${body}`);
   }
   parts.push(`USER REQUEST:\n${question.trim()}`);
-  return { system: SYSTEM, user: parts.join("\n\n") };
+  return { system: allowEdits ? SYSTEM : "", user: parts.join("\n\n") };
 }
+
+// ------------------------------------------------------------ size of the next message
+
+/** A rough token count (about 4 characters per token for English). Only an estimate, never exact. */
+export const estimateTokens = (prompt: { system: string; user: string }): number => Math.ceil((prompt.system.length + prompt.user.length) / 4);
+
+/** The model's context window as far as the name tells: 1M if it says so, otherwise the usual 200k. */
+export const contextWindowFor = (model: string): number => (/1m/i.test(model) ? 1_000_000 : 200_000);
 
 // ------------------------------------------------------------ the reply
 

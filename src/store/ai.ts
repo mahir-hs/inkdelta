@@ -19,6 +19,8 @@ export interface AiConfig {
   baseUrl: string;
   apiKey: string;
   command: string;
+  /** Claude Code only: low, medium, high, xhigh, max. Empty = the tool's default. */
+  effort: string;
 }
 
 export interface Preset extends Partial<AiConfig> {
@@ -39,7 +41,7 @@ export const PRESETS: Preset[] = [
 ];
 
 const KEY = "inkdelta.ai";
-const EMPTY: AiConfig = { preset: "", kind: "cli", model: "", baseUrl: "", apiKey: "", command: "" };
+const EMPTY: AiConfig = { preset: "", kind: "cli", model: "", baseUrl: "", apiKey: "", command: "", effort: "" };
 
 function read(): AiConfig {
   try {

@@ -2,7 +2,7 @@
 
 import { Bot, Copy, Eraser, Send, Settings2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { documentParagraphs, sectionsOf, contextFor, type Proposed, type Scope } from "./chat";
+import { contextFor, contextWindowFor, documentParagraphs, estimateTokens, sectionsOf, type Proposed, type Scope } from "./chat";
 import { PRESETS, useAi } from "../../store/ai";
 import { useChat, type ChatMessage } from "../../store/chat";
 import { useReview } from "../../store/review";
@@ -19,8 +19,8 @@ const SUGGESTIONS = [
 ];
 
 export function AskPanel() {
-  const { config, isConfigured, openSettings } = useAi();
-  const { messages, busy, scope, draft, selected, setScope, setDraft, send, clear, preview } = useChat();
+  const { config, isConfigured, openSettings, setConfig } = useAi();
+  const { messages, busy, scope, draft, selected, allowEdits, setScope, setDraft, setAllowEdits, send, clear, preview } = useChat();
   const diff = useWorkspace((s) => s.diff);
   const comments = useReview((s) => s.comments);
   const items = useReview((s) => s.state.items);
@@ -37,6 +37,11 @@ export function AskPanel() {
   const openComments = comments.filter((c) => items[c.id]?.status !== "done" && items[c.id]?.status !== "skipped");
   const context = contextFor(scope, selected);
   const sentPreview = preview();
+  // Claude Code gets a model list and an effort setting; other services just have a model name.
+  const isClaudeCli = config.kind === "cli" && /^claude(\.cmd|\.exe)?(\s|$)/i.test(config.command.trim());
+  const tokens = estimateTokens(sentPreview);
+  const windowTokens = contextWindowFor(config.model);
+  const percent = (tokens / windowTokens) * 100;
 
   const chooseKind = (kind: ScopeKind) => {
     if (kind === "section") setScope({ kind, heading: sections[0]?.position ?? -1 });
@@ -93,6 +98,42 @@ export function AskPanel() {
         </div>
         {scope.kind === "selection" && selected.length === 0 && <p className="ask-note">Select text in the document, then ask.</p>}
 
+        <div className="ask-model">
+          {isClaudeCli ? (
+            <>
+              <label><span>Model</span>
+                <select value={config.model} onChange={(e) => setConfig({ model: e.target.value })}>
+                  <option value="">Default</option>
+                  <option value="opus">Opus</option>
+                  <option value="sonnet">Sonnet</option>
+                  <option value="haiku">Haiku</option>
+                  {!["", "opus", "sonnet", "haiku"].includes(config.model) && <option value={config.model}>{config.model}</option>}
+                </select>
+              </label>
+              <label><span>Effort</span>
+                <select value={config.effort} onChange={(e) => setConfig({ effort: e.target.value })}>
+                  <option value="">Default</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                  <option value="xhigh">Extra high</option>
+                  <option value="max">Max</option>
+                </select>
+              </label>
+            </>
+          ) : config.kind !== "cli" ? (
+            <label><span>Model</span><input value={config.model} onChange={(e) => setConfig({ model: e.target.value })} /></label>
+          ) : null}
+        </div>
+        <label className="ask-edits" title="Adds a short set of instructions (about 300 tokens) so the AI can answer with changes the app can apply. Off: the AI just chats.">
+          <input type="checkbox" checked={allowEdits} onChange={(e) => setAllowEdits(e.target.checked)} />
+          Let the AI propose document changes
+        </label>
+        <div className="ask-meter" title="Estimate for the next message: about 4 characters per token. Claude Code adds some of its own on top.">
+          <div className="ask-meter-bar"><div className={percent > 70 ? "hot" : ""} style={{ width: `${Math.min(100, Math.max(percent, 0.5))}%` }} /></div>
+          <span>Context ≈ {percent < 1 ? "<1" : Math.round(percent)}% · ~{tokens.toLocaleString()} of {(windowTokens / 1000).toLocaleString()}k tokens (estimate)</span>
+        </div>
+
         <textarea
           value={draft}
           rows={3}
@@ -103,7 +144,7 @@ export function AskPanel() {
         <div className="ask-send">
           <details className="ask-preview">
             <summary>Exactly what will be sent ({(sentPreview.system.length + sentPreview.user.length).toLocaleString()} characters · {context.label})</summary>
-            <pre>{sentPreview.system + "\n\n" + sentPreview.user}</pre>
+            <pre>{[sentPreview.system, sentPreview.user].filter(Boolean).join("\n\n")}</pre>
           </details>
           <button className="primary" disabled={!draft.trim() || busy} onClick={() => void send()}><Send size={14} /> Send</button>
         </div>

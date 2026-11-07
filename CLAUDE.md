@@ -20,7 +20,7 @@ Read `ARCHITECTURE.md` (map, rules, where to change things) and `README.md` befo
 pnpm app                                   # dev (first run compiles Rust, a few minutes)
 pnpm exec tauri build --no-bundle          # release exe: src-tauri/target/release/inkdelta.exe (~2 min)
 pnpm exec tsc --noEmit                     # type-check the UI
-cargo test --manifest-path src-tauri/Cargo.toml    # 47 backend tests (Git against throwaway repos, one real shell)
+cargo test --manifest-path src-tauri/Cargo.toml    # 48 backend tests (Git against throwaway repos, one real shell)
 inkdelta.exe <folder>                      # open a project directly
 ```
 Installers (.msi/.exe) are not built: Tauri would download WiX/NSIS to C:. CI for Windows/macOS/Linux is `.github/workflows/release.yml` (never run).
@@ -56,7 +56,12 @@ with Node (global `WebSocket`). Take screenshots with `Page.captureScreenshot` a
 - **Ask AI chat** (panel `ask`, left icon bar + AI menu): `features/ai/chat.ts` (context, prompt, reply parsing, no UI), `store/chat.ts`
   (messages are in memory only, never saved), `features/ai/AskPanel.tsx`. The user picks what the AI sees (selected text / a section / whole
   document / a review comment / nothing) and can open "Exactly what will be sent". Each message is one CLI call; earlier turns are repeated
-  in the prompt. The AI answers in plain text and, only if asked to change the document, ends with a fenced ```inkdelta JSON block
+  in the prompt. TOKEN COST (owner cares): the format instructions (~350 tokens) are sent ONLY when the switch "Let the AI propose document
+  changes" is on (default off; key `inkdelta.askEdits`); otherwise the prompt is just history + chosen paragraphs + question, with no system text.
+  The owner LIKES the "Exactly what will be sent" preview: keep it. Under the box: Model + Effort pickers (Claude Code only; other services get a
+  model text box) and a context meter (ESTIMATE: chars/4 against 200k, or 1M if the model name says 1m; Claude Code adds some of its own).
+  `ai.rs::cli_command` adds `--model`, `--effort`, `--disable-slash-commands`, `--strict-mcp-config` when the command starts with `claude`
+  (NOT `--bare`: it stops Claude Code reading the OAuth/company login). With the switch on, the AI answers in plain text and, if asked to change the document, ends with a fenced ```inkdelta JSON block
   (edits / inserts / deletes by paragraph number). Proposals are ticked, then become pending changes in `store/docEdits.ts`
   (shown in the reading view: green new paragraph, struck-through removal), and the user presses Save. Selection capture: every reading-view
   paragraph has `data-pos`; `store/chat.ts` listens to `selectionchange` for the whole app lifetime.
@@ -73,7 +78,9 @@ remove a paragraph, multi-turn history in the prompt, ignored out-of-scope sugge
 Terminal panel verified in the real window: starts in the project folder, typing works, `claude --version` found on PATH, Claude Code's full-screen
 UI renders and exits, the shell survives a tab switch, files made by the shell appear in Source control by themselves, Ctrl+K reaches the shell,
 terminal size matches the shell's idea of it, closing the app ends the shell (no orphan).
-**Not verified:** the AI (review flow AND Ask AI chat) with a REAL provider (Claude Code `claude -p`, Codex `codex exec -`, OpenRouter, Ollama, Anthropic key);
+**Not verified:** the AI (review flow AND Ask AI chat) with a REAL provider, incl. whether `--effort`/`--model sonnet`/`--disable-slash-commands`/
+`--strict-mcp-config` are accepted by `claude -p` exactly as built (flags exist in `claude --help` 2.1.319; no real prompt was sent), and a REAL context
+percentage (only an estimate; `claude -p --output-format json` could give real usage) (Claude Code `claude -p`, Codex `codex exec -`, OpenRouter, Ollama, Anthropic key);
 pull/push against GitHub (only a local bare repo); native file/folder pickers, Export HTML, Print, "Compare two files";
 macOS/Linux builds (the terminal's `$SHELL` path in particular); copy/paste inside the terminal with a real mouse; line staging with CRLF files; Match-system theme following live OS changes.
 

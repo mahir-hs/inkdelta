@@ -24,6 +24,9 @@ pub struct AiConfig {
     pub api_key: String,
     /// For `cli`: the command line, for example `claude -p`.
     pub command: String,
+    /// Claude Code only: low, medium, high, xhigh or max. Empty = the tool's own default.
+    #[serde(default)]
+    pub effort: String,
 }
 
 const TIMEOUT: Duration = Duration::from_secs(300);
@@ -39,6 +42,31 @@ pub fn complete(config: &AiConfig, system: &str, user: &str) -> AppResult<String
 
 // ------------------------------------------------------------ command-line tools
 
+/// The command to run. For Claude Code (`claude ...`) the chosen model and effort are added as flags, and
+/// the tool is told to skip skills and MCP servers: a plain question needs neither, and each one costs tokens.
+/// (Not `--bare`: that also stops Claude Code from reading the normal login.) Other tools run exactly as typed.
+fn cli_command(config: &AiConfig) -> String {
+    let command = config.command.trim().to_string();
+    let first = command.split_whitespace().next().unwrap_or("").to_ascii_lowercase();
+    if first != "claude" && first != "claude.cmd" && first != "claude.exe" {
+        return command;
+    }
+    let mut full = command;
+    if !config.model.trim().is_empty() && !full.contains("--model") {
+        full.push_str(&format!(" --model {}", config.model.trim()));
+    }
+    if !config.effort.trim().is_empty() && !full.contains("--effort") {
+        full.push_str(&format!(" --effort {}", config.effort.trim()));
+    }
+    for flag in ["--disable-slash-commands", "--strict-mcp-config"] {
+        if !full.contains(flag) {
+            full.push(' ');
+            full.push_str(flag);
+        }
+    }
+    full
+}
+
 fn run_cli(config: &AiConfig, system: &str, user: &str) -> AppResult<String> {
     if config.command.trim().is_empty() {
         return Err(AppError::Invalid("enter the command to run, for example: claude -p".into()));
@@ -48,19 +76,19 @@ fn run_cli(config: &AiConfig, system: &str, user: &str) -> AppResult<String> {
     let mut command = {
         use std::os::windows::process::CommandExt;
         let mut c = Command::new("cmd");
-        c.args(["/C", &config.command]).creation_flags(0x0800_0000); // no console window
+        c.args(["/C", &cli_command(config)]).creation_flags(0x0800_0000); // no console window
         c
     };
     #[cfg(not(windows))]
     let mut command = {
         let mut c = Command::new("sh");
-        c.args(["-c", &config.command]);
+        c.args(["-c", &cli_command(config)]);
         c
     };
     command.stdin(Stdio::piped()).stdout(Stdio::piped()).stderr(Stdio::piped());
 
     let mut child = command.spawn().map_err(|e| AppError::Io(format!("could not start '{}': {e}", config.command)))?;
-    let prompt = format!("{system}\n\n{user}");
+    let prompt = if system.trim().is_empty() { user.to_string() } else { format!("{system}\n\n{user}") };
     let mut stdin = child.stdin.take().expect("piped");
     let writer = std::thread::spawn(move || {
         let _ = stdin.write_all(prompt.as_bytes()); // closing stdin tells the tool the prompt is complete
@@ -113,12 +141,14 @@ fn http_error(error: ureq::Error) -> AppError {
 
 fn anthropic(config: &AiConfig, system: &str, user: &str) -> AppResult<String> {
     let base = if config.base_url.trim().is_empty() { "https://api.anthropic.com" } else { config.base_url.trim_end_matches('/') };
-    let body = serde_json::json!({
+    let mut body = serde_json::json!({
         "model": config.model,
         "max_tokens": 8000,
-        "system": system,
         "messages": [{ "role": "user", "content": user }],
     });
+    if !system.trim().is_empty() {
+        body["system"] = system.into(); // the API rejects an empty system prompt
+    }
     let reply: serde_json::Value = ureq::post(&format!("{base}/v1/messages"))
         .timeout(TIMEOUT)
         .set("x-api-key", &config.api_key)
@@ -135,10 +165,12 @@ fn openai(config: &AiConfig, system: &str, user: &str) -> AppResult<String> {
     if base.is_empty() {
         return Err(AppError::Invalid("enter the service address, for example https://openrouter.ai/api/v1".into()));
     }
-    let body = serde_json::json!({
-        "model": config.model,
-        "messages": [{ "role": "system", "content": system }, { "role": "user", "content": user }],
-    });
+    let mut messages = Vec::new();
+    if !system.trim().is_empty() {
+        messages.push(serde_json::json!({ "role": "system", "content": system }));
+    }
+    messages.push(serde_json::json!({ "role": "user", "content": user }));
+    let body = serde_json::json!({ "model": config.model, "messages": messages });
     let mut request = ureq::post(&format!("{base}/chat/completions")).timeout(TIMEOUT);
     if !config.api_key.trim().is_empty() {
         request = request.set("Authorization", &format!("Bearer {}", config.api_key.trim()));
@@ -156,7 +188,7 @@ mod tests {
     use std::net::TcpListener;
 
     fn config(kind: &str) -> AiConfig {
-        AiConfig { kind: kind.into(), model: "m".into(), base_url: String::new(), api_key: "k".into(), command: String::new() }
+        AiConfig { kind: kind.into(), model: "m".into(), base_url: String::new(), api_key: "k".into(), command: String::new(), effort: String::new() }
     }
 
     #[test]
@@ -167,6 +199,21 @@ mod tests {
         assert!(reply.contains("SYSTEM RULES") && reply.contains("USER QUESTION"), "got: {reply}");
         c.command = String::new();
         assert!(complete(&c, "s", "u").is_err());
+    }
+
+    #[test]
+    fn claude_gets_model_effort_and_lean_flags_but_other_tools_run_as_typed() {
+        let mut c = config("cli");
+        c.command = "claude -p".into();
+        assert_eq!(cli_command(&c), "claude -p --model m --disable-slash-commands --strict-mcp-config");
+        c.effort = "low".into();
+        c.model = String::new();
+        assert_eq!(cli_command(&c), "claude -p --effort low --disable-slash-commands --strict-mcp-config");
+        c.command = "claude -p --model opus".into();
+        c.model = "sonnet".into();
+        assert!(cli_command(&c).contains("--model opus") && !cli_command(&c).contains("sonnet"), "a model typed by the user wins");
+        c.command = "codex exec -".into();
+        assert_eq!(cli_command(&c), "codex exec -");
     }
 
     /// A one-shot local web server that answers any request with `body`.

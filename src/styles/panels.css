@@ -430,3 +430,13 @@ button.ai-button { color: var(--accent); }
 .terminal-box { flex: 1; min-height: 0; padding: 6px 0 0 10px; background: var(--pane); overflow: hidden; }
 .terminal-host { height: 100%; }
 .terminal-host .xterm-viewport { background: transparent !important; }
+
+.ask-model { display: flex; gap: 8px; flex-wrap: wrap; }
+.ask-model label { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+.ask-model label span { color: var(--text-3); font-size: var(--text-sm); }
+.ask-model select, .ask-model input { min-width: 0; flex: 1; }
+.ask-edits { display: flex; align-items: center; gap: 8px; color: var(--text-2); font-size: var(--text-sm); cursor: pointer; }
+.ask-meter { display: flex; flex-direction: column; gap: 4px; color: var(--text-3); font-size: var(--text-sm); }
+.ask-meter-bar { height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
+.ask-meter-bar > div { height: 100%; background: var(--accent); border-radius: 2px; }
+.ask-meter-bar > div.hot { background: var(--del); }

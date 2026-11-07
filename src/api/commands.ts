@@ -37,7 +37,7 @@ export const api = {
   loadReviewState: (repo: string) => invoke<string | null>("load_review_state", { repo }),
   saveReviewState: (repo: string, json: string) => invoke<void>("save_review_state", { repo, json }),
   saveTextFile: (path: string, content: string) => invoke<void>("save_text_file", { path, content }),
-  aiComplete: (config: { kind: string; model: string; baseUrl: string; apiKey: string; command: string }, system: string, user: string) =>
+  aiComplete: (config: { kind: string; model: string; baseUrl: string; apiKey: string; command: string; effort: string }, system: string, user: string) =>
     invoke<string>("ai_complete", { config, system, user }),
   saveDocumentEdits: (
     repo: string,

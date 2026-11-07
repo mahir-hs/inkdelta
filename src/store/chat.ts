@@ -30,11 +30,14 @@ interface ChatState {
   busy: boolean;
   scope: Scope;
   draft: string;
+  /** Add the instructions that let the AI propose document changes (costs tokens, so off by default). */
+  allowEdits: boolean;
   /** Paragraph positions last selected in the reading view. */
   selected: number[];
 
   setScope: (scope: Scope) => void;
   setDraft: (draft: string) => void;
+  setAllowEdits: (on: boolean) => void;
   setSelected: (positions: number[]) => void;
   /** The exact prompt that Send would deliver right now. */
   preview: () => { system: string; user: string };
@@ -46,6 +49,11 @@ interface ChatState {
 
 let nextId = 1;
 
+const EDITS_KEY = "inkdelta.askEdits";
+function readAllowEdits(): boolean {
+  try { return localStorage.getItem(EDITS_KEY) === "1"; } catch { return false; }
+}
+
 const turnsOf = (messages: ChatMessage[]): ChatTurn[] =>
   messages.filter((m): m is ChatMessage & { role: "user" | "assistant" } => m.role !== "error").map((m) => ({ role: m.role, text: m.text }));
 
@@ -54,19 +62,24 @@ const useChatStore = create<ChatState>((set, get) => ({
   busy: false,
   scope: { kind: "selection" },
   draft: "",
+  allowEdits: readAllowEdits(),
   selected: [],
 
   setScope: (scope) => set({ scope }),
   setDraft: (draft) => set({ draft }),
+  setAllowEdits: (allowEdits) => {
+    try { localStorage.setItem(EDITS_KEY, allowEdits ? "1" : "0"); } catch { /* ignore */ }
+    set({ allowEdits });
+  },
   setSelected: (selected) => set({ selected }),
 
   preview: () => {
-    const { messages, scope, selected, draft } = get();
-    return buildChatPrompt(turnsOf(messages), contextFor(scope, selected), draft || "(your question goes here)");
+    const { messages, scope, selected, draft, allowEdits } = get();
+    return buildChatPrompt(turnsOf(messages), contextFor(scope, selected), draft || "(your question goes here)", allowEdits);
   },
 
   send: async () => {
-    const { draft, scope, selected, messages, busy } = get();
+    const { draft, scope, selected, messages, busy, allowEdits } = get();
     const ui = useUi.getState();
     const ai = useAi.getState();
     if (busy || draft.trim() === "") return;
@@ -80,13 +93,13 @@ const useChatStore = create<ChatState>((set, get) => ({
       ui.toast("info", scope.kind === "selection" ? "Select some text in the document first, or choose another scope." : "Nothing from the document to send for this choice.");
       return;
     }
-    const { system, user } = buildChatPrompt(turnsOf(messages), context, draft);
+    const { system, user } = buildChatPrompt(turnsOf(messages), context, draft, allowEdits);
     const question: ChatMessage = { id: nextId++, role: "user", text: draft.trim(), context: context.label };
     set({ messages: [...messages, question], draft: "", busy: true });
 
     const c = ai.config;
     try {
-      const reply = parseChatReply(await api.aiComplete({ kind: c.kind, model: c.model, baseUrl: c.baseUrl, apiKey: c.apiKey, command: c.command }, system, user), context);
+      const reply = parseChatReply(await api.aiComplete({ kind: c.kind, model: c.model, baseUrl: c.baseUrl, apiKey: c.apiKey, command: c.command, effort: c.effort }, system, user), context);
       const answer: ChatMessage = {
         id: nextId++,
         role: "assistant",

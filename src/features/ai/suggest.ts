@@ -81,7 +81,7 @@ export function buildPrompt(s: Pick<Suggestion, "comment" | "candidates">): { sy
 /** Send one request. For the connection test the caller passes its own system/user text. */
 export async function askAi(config: AiConfig, system?: string, user?: string, suggestion?: Suggestion): Promise<string> {
   const prompt = suggestion ? buildPrompt(suggestion) : { system: system ?? "", user: user ?? "" };
-  return api.aiComplete({ kind: config.kind, model: config.model, baseUrl: config.baseUrl, apiKey: config.apiKey, command: config.command }, prompt.system, prompt.user);
+  return api.aiComplete({ kind: config.kind, model: config.model, baseUrl: config.baseUrl, apiKey: config.apiKey, command: config.command, effort: config.effort }, prompt.system, prompt.user);
 }
 
 /** The first complete {...} object in the reply (tools often add chatter around it), checked against what was asked. */
