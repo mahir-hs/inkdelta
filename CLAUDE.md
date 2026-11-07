@@ -62,7 +62,25 @@ macOS/Linux builds; line staging with CRLF files; Match-system theme following l
 Edit text only (no add/delete paragraphs; paragraphs with equations/tabs/breaks/pictures/fields are read-only, ~533 of 579 editable in the paper).
 Word conflicts: keep one whole version. API keys are stored in plain text in localStorage. AI picks paragraphs by simple word overlap (max 6).
 
-## Next steps the owner wanted
+## NEXT SESSION: planned work (owner confirmed, in this order)
+The review-only AI is "too rigid". The owner wants AI usable for ANY task, with the company-provided CLI as the main route.
+1. **"Ask AI" chat panel (dock panel `ask`)**: free-text prompts with history shown in the panel; the user picks what the AI sees
+   (selected text / current section / whole paper / a review comment). Replies appear and can be applied as pending edits
+   (reuse `store/docEdits.ts`, `features/ai/suggest.ts` parsing, `ai.rs`). Needs a way to feed back multi-turn context
+   (send prior turns in the prompt; the CLI call is one-shot). Add paragraph INSERT/DELETE to `docx/edit.rs` so "write a new section" works.
+2. **Real terminal panel** (PTY + xterm.js, e.g. `portable-pty` crate) opened in the project folder so the owner can run
+   `claude` / `codex` interactively. Note Claude Code edits text files, not .docx; refresh the app on file changes.
+3. **CLI-only / strict privacy mode** (owner's requirement): the owner uses an OFFICIAL company Claude account and must use ONLY the
+   Claude Code CLI, with history only on this computer. Add a setting that hides API-key/OpenRouter/Ollama providers and
+   (a) appends `--no-session-persistence` (verify the flag exists via `claude --help`), (b) restricts tools in print mode,
+   (c) sets the CLI's working directory deliberately (`run_cli` in `ai.rs` currently inherits the app's cwd).
+   Facts to keep honest about: Inkdelta stores NO prompts/replies; the CLI keeps its own local transcripts under
+   `C:\Users\Administrator\.claude\` (accepted C: exception); Claude Code does not show in claude.ai chat history (believed, unverified);
+   company/Anthropic server-side retention is set by the account policy and cannot be checked from the app.
+4. Show the exact full prompt in the "Send" confirmation (today it lists only the paragraphs). "Send" means: the app silently spawns
+   the CLI (`cmd /C claude -p`, no window), writes the prompt to its stdin and reads stdout. One shot, no memory, not the web UI.
+
+## Older next steps
 1. Try the AI with a real service and fix command/model defaults. 2. A right-edge icon bar matching panels placed on the right.
 3. Test pull/push on GitHub; macOS/Linux builds via CI. 4. "Draft the reply to the reviewer" AI action; discard individual lines.
 Owner feedback style: wants a Notion-like calm, premium feel; features must be discoverable (no hidden shortcuts only); everything user-configurable.
