@@ -29,7 +29,7 @@ Real screenshots (`assets/shots/*.webp`, also used by the README) come from the 
 scripted stand-in AI reply; captured over the DevTools protocol at 2x as WebP. NEVER use the owner's real paper text, hashes or paths on the site/README.
 Preview: `python -m http.server 8099 --bind 127.0.0.1` in `docs/`; check with headless Edge over the DevTools protocol (profile on D:).
 `.github/workflows/pages.yml` deploys on changes to `docs/`; Pages source is "GitHub Actions"; `gh` lives at `D:\DevData\gh\bin\gh.exe` (logged in).
-The repo has NO LICENSE file yet (owner has not chosen one); do not invent one.
+The repo is MIT licensed (`LICENSE`, copyright mahir-hs); keep the `license` fields in Cargo.toml and package.json in step.
 
 ## Build, run, test
 ```

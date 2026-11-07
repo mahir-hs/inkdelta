@@ -70,6 +70,10 @@ Not checked yet: the AI with a real provider (the tests used a stand-in tool), p
 
 The screenshots above use an invented sample paper.
 
+## License
+
+[MIT](LICENSE).
+
 ## For developers
 
 [ARCHITECTURE.md](ARCHITECTURE.md) explains the layout and where to change things.
