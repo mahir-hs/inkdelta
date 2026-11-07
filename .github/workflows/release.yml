@@ -5,6 +5,10 @@ on:
     tags: ["v*"]
   workflow_dispatch:
 
+# The token must be allowed to create the release and upload the installers to it.
+permissions:
+  contents: write
+
 jobs:
   build:
     strategy:
